@@ -1,8 +1,8 @@
 #!/bin/bash
 # env variables:
-# - WAIT_FOR_KAFKA_ADDRESS
+# - WAIT_FOR_DB_ADDRESS
 
-IFS=':' read -ra ADDRESS_SPLIT <<< "${WAIT_FOR_KAFKA_ADDRESS}"
+IFS=':' read -ra ADDRESS_SPLIT <<< "${WAIT_FOR_DB_ADDRESS}"
 if [ "${#ADDRESS_SPLIT[@]}" -ne "2" ]; then
     echo "Expected argument format: HOST:PORT"
     echo "Unexpected argument: ${ADDRESS}"
@@ -16,4 +16,4 @@ HOST="${ADDRESS_SPLIT[0]}"
 PORT="${ADDRESS_SPLIT[1]}"
 
 while ! nc -z "${HOST}" "${PORT}"; do sleep 1; done;
-echo "Kafka is up"
+echo "Database is up"
