@@ -7,6 +7,7 @@ from multiprocessing import Process
 from typing import TYPE_CHECKING
 
 import psutil
+from starlette.requests import Request
 
 from src.exceptions.simulation import (
     SimulationException,
@@ -141,6 +142,13 @@ def get_app_simulation_state(app: FastAPI) -> State:
         return app.state.simulation_state
     except AttributeError:
         raise SimulationStateNotSetException()
+
+
+def get_simulation_state() -> Callable[[Request], State]:
+    def _get_simulation_state(request: Request) -> State:
+        return get_app_simulation_state(request.app)
+
+    return _get_simulation_state
 
 
 def create_simulation_state_startup_handler(app: FastAPI) -> Callable[[], None]:

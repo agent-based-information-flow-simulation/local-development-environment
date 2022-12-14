@@ -11,7 +11,6 @@ from src.instance.state import (
     create_simulation_state_shutdown_handler,
     create_simulation_state_startup_handler,
 )
-from src.repeated_tasks.instance import create_instance_state_handler
 from src.repeated_tasks.simulation import create_simulation_process_health_check_handler
 from src.routers.health import router as health_router
 from src.routers.internal import router as internal_router
@@ -31,7 +30,6 @@ def get_app(unit_tests: bool = False) -> FastAPI:
 
     if not unit_tests:  # pragma: no cover
         app.add_event_handler("startup", create_simulation_state_startup_handler(app))
-        app.add_event_handler("startup", create_instance_state_handler(app))
         app.add_event_handler(
             "startup", create_simulation_process_health_check_handler(app)
         )

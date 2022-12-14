@@ -7,6 +7,8 @@ from src.database.repositories.base import BaseRepository
 if TYPE_CHECKING:
     from typing import Type
 
+    from src.instance.state import State
+
 
 class BaseService:
     def __init__(self) -> None:
@@ -17,7 +19,7 @@ class BaseServiceWithRepository(BaseService):
     repository_type: Type[BaseRepository] = BaseRepository
 
     def __init__(self, repository: BaseRepository) -> None:
-        super.__init__()
+        super().__init__()
         self._repository = repository
 
     @property
@@ -25,6 +27,11 @@ class BaseServiceWithRepository(BaseService):
         ...
 
 
-class BaseServiceWithoutRepository(BaseService):
-    def __init__(self) -> None:
-        super.__init__()
+class BaseServiceWithState(BaseService):
+    def __init__(self, state: State) -> None:
+        super().__init__()
+        self._state = state
+
+    @property
+    def state(self) -> State:
+        ...

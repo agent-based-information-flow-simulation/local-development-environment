@@ -12,11 +12,13 @@ from src.database.connection import (
     get_session_from_db_pool,
 )
 from src.database.repositories.base import BaseRepository
+from src.instance.state import State, get_app_simulation_state, get_simulation_state
 from src.services.base import (
     BaseService,
-    BaseServiceWithoutRepository,
     BaseServiceWithRepository,
+    BaseServiceWithState,
 )
+from src.services.instance import InstanceService
 from src.services.timeseries import TimeseriesService
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -42,9 +44,7 @@ def get_repository(
 def get_service(
     service_type: Type[BaseService],
 ) -> Callable[[BaseRepository], BaseService]:
-    if issubclass(service_type, BaseServiceWithoutRepository):
-        return service_type()
-    elif issubclass(service_type, BaseServiceWithRepository):
+    if issubclass(service_type, BaseServiceWithRepository):
 
         def _get_service_with_repository(
             repository: BaseRepository = Depends(
@@ -54,24 +54,38 @@ def get_service(
             return service_type(repository)
 
         return _get_service_with_repository
+
+    elif issubclass(service_type, BaseServiceWithState):
+
+        def _get_service_with_state(
+            state: State = Depends(get_simulation_state()),
+        ) -> BaseService:
+            return service_type(state)
+
+        return _get_service_with_state
+
     else:
-        raise ValueError(f"Unknown service type: {service_type}")
+        return service_type()
 
 
 async def get_service_without_request(
     app: FastAPI, service_type: Type[BaseService]
 ) -> BaseService:
-    if issubclass(service_type, BaseServiceWithoutRepository):
-        return get_service(service_type)
-    elif issubclass(service_type, BaseServiceWithRepository):
+    if issubclass(service_type, BaseServiceWithRepository):
         db = get_app_db(app)
         collection = get_collection(service_type.repository_type.collection_name)(db)
         db_client = get_app_db_client(app)
         session = await get_session_from_db_pool(db_client)
         repository = get_repository(service_type.repository_type)(session, collection)
-        return get_service(service_type)(repository)
+        return service_type(repository)
+
+    elif issubclass(service_type, BaseServiceWithState):
+        state = get_app_simulation_state(app)
+        return service_type(state)
+
     else:
-        raise ValueError(f"Unknown service type: {service_type}")
+        return service_type()
 
 
 timeseries_service: Callable[[], TimeseriesService] = get_service(TimeseriesService)
+instance_service: Callable[[], InstanceService] = get_service(InstanceService)
