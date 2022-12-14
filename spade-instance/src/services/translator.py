@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class TranslatorService(BaseService):
-    async def translate(code: List[str]) -> TranslatedCode:
+    async def translate(self, code: List[str]) -> TranslatedCode:
         url = f"{translator_settings.url}/python/spade"
         try:
             async with httpx.AsyncClient() as client:
