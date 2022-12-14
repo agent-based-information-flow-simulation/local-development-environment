@@ -1,0 +1,26 @@
+name: Python Linter
+
+on: 
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  code_formatter:
+    name: Black
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-black@v2
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check
+          level: warning
+          workdir: "spade-instance"
+          black_args: ""
+          tool_name: remark-lint
+          filter_mode: nofilter
+          fail_on_error: true
+          reviewdog_flags: ""
