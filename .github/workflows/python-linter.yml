@@ -14,7 +14,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-check
           level: warning
-          workdir: "spade-instance"
+          workdir: .
           black_args: ""
           tool_name: remark-lint
           filter_mode: nofilter
