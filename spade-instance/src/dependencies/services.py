@@ -22,7 +22,7 @@ from src.services.instance import InstanceService
 from src.services.timeseries import TimeseriesService
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Callable, Type
+    from typing import Any, Callable, Coroutine, Type
 
     from fastapi import FastAPI
 
@@ -68,24 +68,44 @@ def get_service(
         return service_type()
 
 
-async def get_service_without_request(
-    app: FastAPI, service_type: Type[BaseService]
-) -> BaseService:
+def get_service_without_request(
+    service_type: Type[BaseService],
+) -> Callable[[FastAPI], Coroutine[Any, Any, BaseService]]:
     if issubclass(service_type, BaseServiceWithRepository):
-        db = get_app_db(app)
-        collection = get_collection(service_type.repository_type.collection_name)(db)
-        db_client = get_app_db_client(app)
-        session = await get_session_from_db_pool(db_client)
-        repository = get_repository(service_type.repository_type)(session, collection)
-        return service_type(repository)
+
+        async def _get_service_with_repository(app: FastAPI) -> BaseService:
+            db = get_app_db(app)
+            collection = await get_collection(
+                service_type.repository_type.collection_name
+            )(db)
+            db_client = get_app_db_client(app)
+            session = await get_session_from_db_pool(db_client).__anext__()
+            repository = get_repository(service_type.repository_type)(
+                session, collection
+            )
+            return service_type(repository)
+
+        return _get_service_with_repository
 
     elif issubclass(service_type, BaseServiceWithState):
-        state = get_app_simulation_state(app)
-        return service_type(state)
+
+        async def _get_service_with_state(app: FastAPI) -> BaseService:
+            state = get_app_simulation_state(app)
+            return service_type(state)
+
+        return _get_service_with_state
 
     else:
-        return service_type()
+
+        async def _get_service(app: FastAPI) -> BaseService:
+            return service_type()
+
+        return _get_service
 
 
 timeseries_service: Callable[[], TimeseriesService] = get_service(TimeseriesService)
 instance_service: Callable[[], InstanceService] = get_service(InstanceService)
+
+timeseries_service_from_app: Callable[
+    [FastAPI], Coroutine[Any, Any, TimeseriesService]
+] = get_service_without_request(TimeseriesService)

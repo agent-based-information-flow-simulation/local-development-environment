@@ -26,6 +26,7 @@ pytest-asyncio = "*"
 pytest-httpx = "*"
 mem-top = "*"
 click = "*"
+pyright = "*"
 
 [requires]
 python_version = "3.9"
