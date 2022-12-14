@@ -38,7 +38,6 @@ services:
       - DB_URL=mongodb://user:pass@mongo:27017/simulations
       - COMMUNICATION_SERVER_PASSWORD=password
       - LOG_LEVEL_AGENT=INFO
-      - LOG_LEVEL_KAFKA=INFO
       - LOG_LEVEL_UVICORN_ACCESS=WARNING
       - LOG_LEVEL_REPEATED_TASKS=INFO
       - LOG_LEVEL_ROUTERS=INFO
@@ -50,9 +49,6 @@ services:
       - LOG_LEVEL_STATE=INFO
       - PORT=8000
       - RELOAD=True
-      - SIMULATION_LOAD_BALANCER_URL=http://simulation-load-balancer:8000
-      - SIMULATION_LOAD_BALANCER_ANNOUNCEMENT_PERIOD=10
-      - SIMULATION_PROCESS_HEALTH_CHECK_PERIOD=5
       - WAIT_FOR_DB_ADDRESS=mongo:27017
     image: 127.0.0.1:5000/sre-spade-instance
     ports:
