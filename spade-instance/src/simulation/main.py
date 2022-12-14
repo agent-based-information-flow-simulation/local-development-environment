@@ -9,7 +9,7 @@ import spade
 import uvloop
 from spade.container import Container
 
-from src.settings import simulation_settings
+from src.settings.simulation import simulation_settings
 from src.simulation.code_generation import generate_agents
 from src.simulation.initialization import connect_agents, setup_agents
 from src.simulation.status import send_status

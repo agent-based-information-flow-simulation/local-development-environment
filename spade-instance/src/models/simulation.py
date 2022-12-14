@@ -4,8 +4,6 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
-from src.status import Status
-
 
 class CreateSimulation(BaseModel):
     simulation_id: str
@@ -15,9 +13,3 @@ class CreateSimulation(BaseModel):
 
 class DeletedSimulation(BaseModel):
     simulation_id: str
-
-
-class InstanceStatus(BaseModel):
-    status: Status
-    num_agents: int
-    broken_agents: List[str]

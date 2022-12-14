@@ -13,7 +13,8 @@ import numpy
 import orjson
 import spade
 
-from src.settings import backup_settings, communication_server_settings
+from src.settings.backup import backup_settings
+from src.settings.communication_server import communication_server_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from spade.agent import Agent

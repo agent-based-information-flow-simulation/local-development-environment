@@ -8,8 +8,8 @@ import httpx
 import orjson
 from aioxmpp.protocol import State
 
-from src.settings import simulation_settings
-from src.status import Status
+from src.instance.status import Status
+from src.settings.simulation import simulation_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from aioxmpp.structs import JID

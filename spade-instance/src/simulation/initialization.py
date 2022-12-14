@@ -10,7 +10,7 @@ import aioxmpp
 from spade.behaviour import FSMBehaviour
 from spade.presence import PresenceManager
 
-from src.settings import simulation_settings
+from src.settings.simulation import simulation_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from aioxmpp.structs import JID

@@ -4,20 +4,21 @@ import asyncio
 import logging
 import os
 from multiprocessing import Process
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict, List, Tuple
+from typing import TYPE_CHECKING
 
 import psutil
 
-from src.exceptions import (
+from src.exceptions.simulation import (
     SimulationException,
     SimulationIdNotSetException,
     SimulationStateNotSetException,
 )
+from src.instance.status import Status
 from src.simulation.main import main
-from src.status import Status
 
 if TYPE_CHECKING:  # pragma: no cover
     from asyncio.locks import Lock
+    from typing import Any, Callable, Coroutine, Dict, List, Tuple
 
     from fastapi import FastAPI
 
@@ -26,7 +27,8 @@ logger.setLevel(level=os.environ.get("LOG_LEVEL_STATE", "INFO"))
 
 
 class State:
-    def __init__(self):
+    def __init__(self, app: FastAPI):
+        self.app: FastAPI = app
         self.mutex: Lock = asyncio.Lock()
         self.status: Status = Status.IDLE
         self.simulation_process: Process | None = None
@@ -113,7 +115,7 @@ class State:
             ):
                 return (
                     psutil.Process(self.simulation_process.pid).memory_info().rss
-                    / 1024 ** 2
+                    / 1024**2
                 )
 
             return 0.0
@@ -144,7 +146,7 @@ def get_app_simulation_state(app: FastAPI) -> State:
 def create_simulation_state_startup_handler(app: FastAPI) -> Callable[[], None]:
     def simulation_state_startup_handler() -> None:
         logger.info("Setting up simulation state")
-        set_app_simulation_state(app, State())
+        set_app_simulation_state(app, State(app))
         logger.info("Simulation state set up complete")
 
     return simulation_state_startup_handler
