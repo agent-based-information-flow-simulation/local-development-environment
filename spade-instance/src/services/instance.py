@@ -50,3 +50,7 @@ class InstanceService(BaseServiceWithState):
 
     async def get_state(self) -> Tuple[Status, str, int, List[str]]:
         return await self.state.get_state()
+
+    async def get_simulation_id(self) -> str | None:
+        _, simulation_id, _, _ = await self.state.get_state()
+        return simulation_id

@@ -52,7 +52,7 @@ async def delete_simulation(
     instance_service: InstanceService = Depends(instance_service),
 ):
     logger.debug(f"Deleting simulation, state: {await instance_service.get_state()}")
-    _, simulation_id, _, _ = await instance_service.get_state()
+    simulation_id = await instance_service.get_simulation_id()
     try:
         await instance_service.kill_simulation()
         return DeletedSimulation(simulation_id=simulation_id)

@@ -55,9 +55,7 @@ class State:
             self.num_agents = num_agents
             self.broken_agents = broken_agents
 
-    async def get_state(
-        self,
-    ) -> Coroutine[Any, Any, Tuple[Status, str, int, List[str]]]:
+    async def get_state(self) -> Tuple[Status, str | None, int, List[str]]:
         logger.debug("Getting state")
         async with self.mutex:
             return (
