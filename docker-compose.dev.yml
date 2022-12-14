@@ -12,6 +12,7 @@ services:
     image: bitnami/mongodb:5.0.14-debian-11-r7
     ports:
       - "27017:27017"
+    restart: always
 
   mongo-gui:
     container_name: lde-mongo-gui-dev
@@ -23,6 +24,7 @@ services:
     image: mongo-express:0.54.0
     ports:
       - "27018:8081"
+    restart: always
 
   spade-instance:
     build: ./spade-instance
@@ -49,10 +51,22 @@ services:
       - LOG_LEVEL_STATE=INFO
       - PORT=8000
       - RELOAD=True
+      - TRANSLATOR_URL=http://translator:8000
       - WAIT_FOR_DB_ADDRESS=mongo:27017
-    image: 127.0.0.1:5000/sre-spade-instance
     ports:
       - "8000:8000"
     restart: always
     volumes:
       - ./spade-instance/src:/api/src
+
+  translator:
+    build: ./translator
+    container_name: lde-translator-dev
+    environment:
+      - PORT=8000
+      - RELOAD=True
+    ports:
+      - "8001:8000"
+    restart: always
+    volumes:
+      - ./translator/src:/api/src

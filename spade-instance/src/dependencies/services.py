@@ -20,6 +20,7 @@ from src.services.base import (
 )
 from src.services.instance import InstanceService
 from src.services.timeseries import TimeseriesService
+from src.services.translator import TranslatorService
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Coroutine, Type
@@ -65,7 +66,11 @@ def get_service(
         return _get_service_with_state
 
     else:
-        return service_type()
+
+        def _get_service() -> BaseService:
+            return service_type()
+
+        return _get_service
 
 
 def get_service_without_request(
@@ -105,7 +110,8 @@ def get_service_without_request(
 
 timeseries_service: Callable[[], TimeseriesService] = get_service(TimeseriesService)
 instance_service: Callable[[], InstanceService] = get_service(InstanceService)
+translator_service: Callable[[], TranslatorService] = get_service(TranslatorService)
 
-timeseries_service_from_app: Callable[
-    [FastAPI], Coroutine[Any, Any, TimeseriesService]
-] = get_service_without_request(TimeseriesService)
+# translator_service: Callable[
+#     [FastAPI], Coroutine[Any, Any, TimeseriesService]
+# ] = get_service_without_request(TranslatorService)
