@@ -13,7 +13,11 @@ from motor.motor_asyncio import (
 )
 from starlette.requests import Request
 
-from src.exceptions.database import CollectionDoesNotExistException
+from src.exceptions.database import (
+    CollectionDoesNotExistException,
+    DatabaseClientNotSetException,
+    DatabaseNotSetException,
+)
 from src.settings.database import database_settings
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -30,7 +34,10 @@ def set_app_db_client(app: FastAPI, db_client: AsyncIOMotorClient) -> None:
 
 
 def get_app_db_client(app: FastAPI) -> AsyncIOMotorClient:
-    return app.state.db_client
+    try:
+        return app.state.db_client
+    except AttributeError:
+        raise DatabaseClientNotSetException()
 
 
 def get_db_client() -> Callable[[Request], AsyncIOMotorClient]:
@@ -45,7 +52,10 @@ def set_app_db(app: FastAPI, db: AsyncIOMotorDatabase) -> None:
 
 
 def get_app_db(app: FastAPI) -> AsyncIOMotorDatabase:
-    return app.state.db
+    try:
+        return app.state.db
+    except AttributeError:
+        raise DatabaseNotSetException()
 
 
 def get_db() -> Callable[[Request], AsyncIOMotorDatabase]:
