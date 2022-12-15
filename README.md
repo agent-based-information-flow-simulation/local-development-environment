@@ -38,9 +38,6 @@ To see all the available options run the `help` command:
 ./server.sh help
 ```
 
-## Usage <a name = "usage"></a>
-There are no additional requirements for using the application.
-
 ## Structure <a name = "structure"></a>
 
 The structure of the simulation run environment is presented below.
