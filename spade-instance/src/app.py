@@ -7,6 +7,7 @@ from src.database.connection import (
     create_startup_db_access_handler,
     create_startup_db_connection_handler,
 )
+from src.database.initialization import create_startup_db_collection_creator
 from src.instance.state import (
     create_simulation_state_shutdown_handler,
     create_simulation_state_startup_handler,
@@ -17,7 +18,6 @@ from src.routers.internal import router as internal_router
 from src.routers.simulation import router as simulation_router
 from src.routers.timeseries import router as timeseries_router
 from src.settings.logging import configure_logging
-from src.database.initialization import create_startup_db_collection_creator
 
 
 def get_app(unit_tests: bool = False) -> FastAPI:

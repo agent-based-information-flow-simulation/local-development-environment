@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import logging
 import os
+from typing import TYPE_CHECKING
+
+from pymongo import ASCENDING
+from pymongo.errors import CollectionInvalid
 
 from src.database.connection import get_app_db
-from pymongo.errors import CollectionInvalid
-from pymongo import ASCENDING
 
 if TYPE_CHECKING:
-    from fastapi import FastAPI
     from typing import Callable
-    
+
+    from fastapi import FastAPI
+
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_DB", "INFO"))
 
@@ -25,7 +27,8 @@ def create_startup_db_collection_creator(
         db = get_app_db(app)
         try:
             collection = await db.create_collection(
-                collection_name, timeseries={"timeField": "timestamp", "metaField": "metadata"}
+                collection_name,
+                timeseries={"timeField": "timestamp", "metaField": "metadata"},
             )
             logger.info(f"Collection '{collection_name}' created")
         except CollectionInvalid:

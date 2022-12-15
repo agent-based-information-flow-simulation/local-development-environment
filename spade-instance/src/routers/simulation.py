@@ -15,7 +15,7 @@ from src.dependencies.services import (
 from src.exceptions.graph_creator import GraphNotGeneratedException
 from src.exceptions.simulation import SimulationException
 from src.exceptions.translator import TranslationException, TranslatorException
-from src.models.simulation import CreateSimulation, DeletedSimulation, CreatedSimulation
+from src.models.simulation import CreatedSimulation, CreateSimulation, DeletedSimulation
 from src.services.graph_creator import GraphCreatorService
 from src.services.instance import InstanceService
 from src.services.translator import TranslatorService
@@ -58,7 +58,7 @@ async def create_simulation(
         )
     except SimulationException as e:
         raise HTTPException(400, str(e))
-    
+
     return CreatedSimulation(simulation_id=simulation_id)
 
 

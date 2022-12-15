@@ -13,6 +13,7 @@ from src.database.connection import (
 )
 from src.database.repositories.base import BaseRepository
 from src.instance.state import State, get_app_simulation_state, get_simulation_state
+from src.services.agent_updates import AgentUpdatesService
 from src.services.base import (
     BaseService,
     BaseServiceWithRepository,
@@ -115,7 +116,6 @@ translator_service: Callable[[], TranslatorService] = get_service(TranslatorServ
 graph_creator_service: Callable[[], GraphCreatorService] = get_service(
     GraphCreatorService
 )
-
-# translator_service: Callable[
-#     [FastAPI], Coroutine[Any, Any, TimeseriesService]
-# ] = get_service_without_request(TranslatorService)
+agent_updates: Callable[
+    [FastAPI], Coroutine[Any, Any, AgentUpdatesService]
+] = get_service_without_request(AgentUpdatesService)

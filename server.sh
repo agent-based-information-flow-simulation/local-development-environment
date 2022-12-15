@@ -6,7 +6,7 @@ function usage() {
     echo "       stop: stop the server"
     echo "       clean: stop the server and remove all docker data"
     echo "       stats: print stats from all services"
-    echo "       publish: publish the images to a registry"
+    echo "       publish: publish the images to the registry"
     echo "       unit-test SERVICE: run the unit-test suite for the given service"
     echo "       mongo-dump CONTAINER HOST_DESTINATION: dump the mongo database"
     echo "       mongo-restore CONTAINER HOST_SOURCE: restore the mongo database"

@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import httpx
 import orjson
 
 from src.exceptions.translator import TranslationException, TranslatorException
-from src.models.translator import TranslatedCode
 from src.services.base import BaseService
 from src.settings.translator import translator_settings
 
 if TYPE_CHECKING:
     from typing import List
+
+
+@dataclass
+class TranslatedCode:
+    agent_code_lines: List[str]
+    graph_code_lines: List[str]
 
 
 class TranslatorService(BaseService):
