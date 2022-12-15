@@ -24,20 +24,21 @@ function start() {
         esac
     done
 
+    FLAGS=""
+
     if [ "$DEV" -eq "1" ]; then
         COMPOSE_FILE=docker-compose.dev.yml
+        FLAGS="${FLAGS} --build"
     else
         COMPOSE_FILE=docker-compose.yml
     fi
 
-    if [ "$DETACH" -eq "0" ]; then
-        DETACH_FLAG="--"
-    else
-        DETACH_FLAG="--detach"
+    if [ "$DETACH" -eq "1" ]; then
+        FLAGS="${FLAGS} --detach"        
     fi
 
     source .version
-    if env VERSION="${VERSION}" docker compose --file ./"$COMPOSE_FILE" up --build "$DETACH_FLAG"; then
+    if env VERSION="${VERSION}" docker compose --file ./"$COMPOSE_FILE" up $FLAGS; then
         echo "Version: ${VERSION}"
         echo "OK"
     else
@@ -47,16 +48,17 @@ function start() {
 }
 
 function stop() {
+    source .version
     docker compose --file ./docker-compose.dev.yml stop --timeout 5
     docker compose --file ./docker-compose.test.yml stop --timeout 5
-    docker compose --file ./docker-compose.yml stop --timeout 5
+    env VERSION="${VERSION}" docker compose --file ./docker-compose.yml stop --timeout 5
 }
 
 function clean() {
-    stop
+    source .version
     docker compose --file ./docker-compose.dev.yml down --timeout 5
     docker compose --file ./docker-compose.test.yml down --timeout 5 
-    docker compose --file ./docker-compose.yml down --timeout 5
+    env VERSION="${VERSION}" docker compose --file ./docker-compose.yml down --timeout 5
 }
 
 function stats() {
