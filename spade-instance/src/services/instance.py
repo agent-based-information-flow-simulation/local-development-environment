@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from uuid import uuid4
 
 import psutil
 
+from src.instance.status import Status
 from src.models.instance import InstanceStatus
 from src.services.base import BaseServiceWithState
 
@@ -11,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, List, Tuple
 
     from src.instance.state import State
-    from src.instance.status import Status
 
 
 class InstanceService(BaseServiceWithState):
@@ -38,11 +39,9 @@ class InstanceService(BaseServiceWithState):
         )
 
     async def start_simulation(
-        self,
-        simulation_id: str,
-        agent_code_lines: List[str],
-        agent_data: List[Dict[str, Any]],
-    ):
+        self, agent_code_lines: List[str], agent_data: List[Dict[str, Any]]
+    ) -> str:
+        simulation_id = uuid4().hex
         self.state.start_simulation_process(simulation_id, agent_code_lines, agent_data)
 
     async def kill_simulation(self) -> None:
@@ -54,3 +53,7 @@ class InstanceService(BaseServiceWithState):
     async def get_simulation_id(self) -> str | None:
         _, simulation_id, _, _ = await self.state.get_state()
         return simulation_id
+
+    async def is_simulation_running(self) -> bool:
+        status, _, _, _ = await self.state.get_state()
+        return status in (Status.RUNNING, Status.STARTING)

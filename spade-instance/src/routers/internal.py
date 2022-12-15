@@ -24,6 +24,7 @@ async def update_active_instance_status(
     instance_service: InstanceService = Depends(instance_service),
 ):
     logger.debug(f"Update active instance state: {instance_status}")
+
     try:
         await instance_service.update_active_status(instance_status)
     except SimulationException as e:

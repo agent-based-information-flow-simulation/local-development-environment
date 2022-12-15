@@ -26,12 +26,13 @@ async def create_simulation(
     instance_service: InstanceService = Depends(instance_service),
     translator_service: TranslatorService = Depends(translator_service),
 ):
-    logger.debug(
-        f"Creating simulation {simulation_data.simulation_id}, state: {await instance_service.get_state()}"
-    )
+    logger.debug(f"Creating simulation, state: {await instance_service.get_state()}")
+
+    if await instance_service.is_simulation_running():
+        raise HTTPException(400, "Simulation is already running.")
 
     try:
-        translated_code = await translator_service.translate(["a"])
+        translated_code = await translator_service.translate(simulation_data.code_lines)
     except TranslatorException as e:
         raise HTTPException(500, str(e))
     except TranslationException as e:
@@ -39,9 +40,7 @@ async def create_simulation(
 
     try:
         await instance_service.start_simulation(
-            simulation_data.simulation_id,
-            simulation_data.agent_code_lines,
-            simulation_data.agent_data,
+            translated_code.agent_code_lines, translated_code.agent_data
         )
     except SimulationException as e:
         raise HTTPException(400, str(e))
@@ -52,6 +51,7 @@ async def delete_simulation(
     instance_service: InstanceService = Depends(instance_service),
 ):
     logger.debug(f"Deleting simulation, state: {await instance_service.get_state()}")
+
     simulation_id = await instance_service.get_simulation_id()
     try:
         await instance_service.kill_simulation()

@@ -6,7 +6,7 @@ import httpx
 import orjson
 
 from src.exceptions.translator import TranslationException, TranslatorException
-from src.models.translated_code import TranslatedCode
+from src.models.translator import TranslatedCode
 from src.services.base import BaseService
 from src.settings.translator import translator_settings
 
