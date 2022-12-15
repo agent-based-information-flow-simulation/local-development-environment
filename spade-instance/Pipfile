@@ -14,7 +14,8 @@ orjson = "*"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 uvloop = "*"
-aiokafka = "*"
+motor = "*"
+aioprocessing = "*"
 
 [dev-packages]
 black = "*"
@@ -25,6 +26,8 @@ asgi-lifespan = "*"
 pytest-asyncio = "*"
 pytest-httpx = "*"
 mem-top = "*"
+click = "*"
+pyright = "*"
 
 [requires]
 python_version = "3.9"

@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  mongo:
+    container_name: lde-mongo-dev
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_USERNAME=user
+      - MONGODB_PASSWORD=pass
+      - MONGODB_DATABASE=simulations
+    image: bitnami/mongodb:5.0.14-debian-11-r7
+    ports:
+      - "27017:27017"
+    restart: always
+
+  mongo-gui:
+    container_name: lde-mongo-gui-dev
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=root
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_OPTIONS_EDITORTHEME=3024-night
+    image: mongo-express:0.54.0
+    ports:
+      - "27018:8081"
+    restart: always
+
+  spade-instance:
+    build: ./spade-instance
+    container_name: lde-spade-instance-dev
+    environment:
+      - ACTIVE_SIMULATION_STATUS_ANNOUCEMENT_PERIOD=10
+      - AGENT_BACKUP_PERIOD=15
+      - AGENT_BACKUP_DELAY=0
+      - DB_URL=mongodb://user:pass@mongo:27017/simulations
+      - LOG_LEVEL_AGENT=INFO
+      - LOG_LEVEL_DB=INFO
+      - LOG_LEVEL_UVICORN_ACCESS=INFO
+      - LOG_LEVEL_REPEATED_TASKS_SIMULATION=INFO
+      - LOG_LEVEL_ROUTERS_SIMULATION=INFO
+      - LOG_LEVEL_SIMULATION_CODE_GENERATION=INFO
+      - LOG_LEVEL_SIMULATION_INITIALIZATION=INFO
+      - LOG_LEVEL_SIMULATION_MAIN=INFO
+      - LOG_LEVEL_SIMULATION_STATUS=INFO
+      - LOG_LEVEL_SPADE_BEHAVIOUR=INFO
+      - LOG_LEVEL_STATE=INFO
+      - PORT=8000
+      - RELOAD=True
+      - SIMULATION_PROCESS_HEALTH_CHECK_PERIOD=5
+      - TRANSLATOR_URL=http://translator:8000
+      - WAIT_FOR_DB_ADDRESS=mongo:27017
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - ./spade-instance/src:/api/src
+
+  translator:
+    build: ./translator
+    container_name: lde-translator-dev
+    environment:
+      - PORT=8000
+      - RELOAD=True
+    ports:
+      - "8001:8000"
+    restart: always
+    volumes:
+      - ./translator/src:/api/src

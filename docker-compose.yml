@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  mongo:
+    container_name: lde-mongo
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_USERNAME=user
+      - MONGODB_PASSWORD=pass
+      - MONGODB_DATABASE=simulations
+    image: bitnami/mongodb:5.0.14-debian-11-r7
+    restart: always
+    volumes:
+      - mongo-data:/bitnami/mongodb
+
+  spade-instance:
+    build: ./spade-instance
+    container_name: lde-spade-instance
+    environment:
+      - ACTIVE_SIMULATION_STATUS_ANNOUCEMENT_PERIOD=10
+      - AGENT_BACKUP_PERIOD=15
+      - AGENT_BACKUP_DELAY=0
+      - DB_URL=mongodb://user:pass@mongo:27017/simulations
+      - LOG_LEVEL_AGENT=INFO
+      - LOG_LEVEL_DB=INFO
+      - LOG_LEVEL_UVICORN_ACCESS=INFO
+      - LOG_LEVEL_REPEATED_TASKS_SIMULATION=INFO
+      - LOG_LEVEL_ROUTERS_SIMULATION=INFO
+      - LOG_LEVEL_SIMULATION_CODE_GENERATION=INFO
+      - LOG_LEVEL_SIMULATION_INITIALIZATION=INFO
+      - LOG_LEVEL_SIMULATION_MAIN=INFO
+      - LOG_LEVEL_SIMULATION_STATUS=INFO
+      - LOG_LEVEL_SPADE_BEHAVIOUR=INFO
+      - LOG_LEVEL_STATE=INFO
+      - PORT=8000
+      - RELOAD=False
+      - SIMULATION_PROCESS_HEALTH_CHECK_PERIOD=5
+      - TRANSLATOR_URL=http://translator:8000
+      - WAIT_FOR_DB_ADDRESS=mongo:27017
+    image: "madpeh/lde-spade-instance:${VERSION}"
+    ports:
+      - "8000:8000"
+    restart: always
+
+  translator:
+    build: ./translator
+    container_name: lde-translator
+    environment:
+      - PORT=8000
+      - RELOAD=False
+    image: "madpeh/lde-translator:${VERSION}"
+    restart: always
+
+volumes:
+  mongo-data:

@@ -201,7 +201,7 @@ async def test_get_simulation_memory_usage_returns_usage_in_MiB(state: State) ->
     state.simulation_process.is_alive.return_value = True
     state.simulation_process.pid = 1
 
-    with patch("psutil.Process.memory_info", return_value=Mock(rss=1024 ** 2)):
+    with patch("psutil.Process.memory_info", return_value=Mock(rss=1024**2)):
         memory_usage = await state.get_simulation_memory_usage()
 
     assert memory_usage == 1.0

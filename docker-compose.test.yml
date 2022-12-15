@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  spade-instance:
+    build:
+      context: ./spade-instance
+      dockerfile: Dockerfile.test
+    container_name: lde-spade-instance-test
+    restart: "no"
+
+  translator:
+    build:
+      context: ./translator
+      dockerfile: Dockerfile.test
+    container_name: lde-translator-test
+    restart: "no"

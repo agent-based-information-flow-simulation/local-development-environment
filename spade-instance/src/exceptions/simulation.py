@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from src.status import Status
+    from src.instance.status import Status
 
 
 class SimulationException(Exception):
@@ -19,8 +19,3 @@ class SimulationStateNotSetException(Exception):
 class SimulationIdNotSetException(Exception):
     def __init__(self):
         super().__init__("Simulation id is not set")
-
-
-class KafkaNotSetException(Exception):
-    def __init__(self):
-        super().__init__("Kafka is not set")
