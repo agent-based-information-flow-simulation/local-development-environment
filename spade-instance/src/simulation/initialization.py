@@ -19,7 +19,6 @@ logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_INITIALIZATION", "INF
 
 
 # https://github.com/agent-based-information-flow-simulation/spade/blob/6a857c2ae0a86b3bdfd20ccfcd28a11e1c6db81e/spade/agent.py#L137
-# setup agent after it has been connected
 def setup_agent(agent: Agent) -> List[Behaviour]:
     agent.setup()
     agent._alive.set()
