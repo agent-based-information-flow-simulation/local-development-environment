@@ -15,9 +15,9 @@ from src.simulation.initialization import connect_agents, setup_agents
 from src.simulation.status import send_status
 
 if TYPE_CHECKING:  # pragma: no cover
+    from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent
-    from aioprocessing import AioQueue
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_MAIN", "INFO"))
@@ -34,7 +34,7 @@ class SimulationInfiniteLoop:
         agents: List[Agent],
         agent_behaviours: Dict[JID, List[spade.behaviour.PeriodicBehaviour]],
         status_annoucement_period: int,
-        simulation_status_updates: AioQueue
+        simulation_status_updates: AioQueue,
     ) -> Coroutine[Any, Any, None]:
         while self.RUNNING:
             # TODO: remove this
@@ -44,7 +44,10 @@ class SimulationInfiniteLoop:
 
 
 async def run_simulation(
-    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue, simulation_status_updates: AioQueue
+    agent_code_lines: List[str],
+    agent_data: List[Dict[str, Any]],
+    agent_updates: AioQueue,
+    simulation_status_updates: AioQueue,
 ) -> Coroutine[Any, Any, None]:
     Container().loop = asyncio.get_running_loop()
 
@@ -60,10 +63,22 @@ async def run_simulation(
 
     logger.info(f"Simulation started with {len(agents)} agents.")
     await SimulationInfiniteLoop().run(
-        agents, agent_behaviours, simulation_settings.status_period, simulation_status_updates
+        agents,
+        agent_behaviours,
+        simulation_settings.status_period,
+        simulation_status_updates,
     )
 
 
-def main(agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue, simulation_status_updates: AioQueue) -> None:
+def main(
+    agent_code_lines: List[str],
+    agent_data: List[Dict[str, Any]],
+    agent_updates: AioQueue,
+    simulation_status_updates: AioQueue,
+) -> None:
     uvloop.install()
-    asyncio.run(run_simulation(agent_code_lines, agent_data, agent_updates, simulation_status_updates))
+    asyncio.run(
+        run_simulation(
+            agent_code_lines, agent_data, agent_updates, simulation_status_updates
+        )
+    )

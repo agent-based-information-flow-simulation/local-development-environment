@@ -1,18 +1,19 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import psutil
 
 from src.instance.status import Status
-from dataclasses import dataclass
 from src.services.base import BaseServiceWithState
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, List, Tuple
 
     from src.instance.state import State
+
 
 @dataclass
 class InstanceStatus:

@@ -2,17 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from src.dependencies.injection import get_service
 from src.services.graph_creator import GraphCreatorService
 from src.services.instance import InstanceService
 from src.services.timeseries import TimeseriesService
 from src.services.translator import TranslatorService
 
-from src.dependencies.injection import get_service
-
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Callable
-
-
 
 
 timeseries_service: Callable[[], TimeseriesService] = get_service(TimeseriesService)

@@ -7,6 +7,7 @@ from multiprocessing import Process
 from typing import TYPE_CHECKING
 
 import psutil
+from aioprocessing import AioQueue
 from starlette.requests import Request
 
 from src.exceptions.simulation import (
@@ -16,8 +17,6 @@ from src.exceptions.simulation import (
 )
 from src.instance.status import Status
 from src.simulation.main import main
-from aioprocessing import AioQueue
-import asyncio
 
 if TYPE_CHECKING:  # pragma: no cover
     from asyncio.locks import Lock
@@ -47,11 +46,15 @@ class State:
         # and then it puts poison pills into the queues
         # it's been noticed that sometimes the poison pills are not processed if put immediately
         # TODO: find a better solution
-        await self.await_empty_queue(self.simulation_status_updates, wait_before_seconds=0.5, every_seconds=0.5)
-        await self.await_empty_queue(self.agent_updates, wait_before_seconds=1.0, every_seconds=1.0)
+        await self.await_empty_queue(
+            self.simulation_status_updates, wait_before_seconds=0.5, every_seconds=0.5
+        )
+        await self.await_empty_queue(
+            self.agent_updates, wait_before_seconds=1.0, every_seconds=1.0
+        )
         await self.simulation_status_updates.coro_put(None)
         await self.agent_updates.coro_put(None)
-        
+
         self.simulation_process = None
         self.simulation_id = None
         self.num_agents = 0
@@ -105,18 +108,35 @@ class State:
             self.status = Status.STARTING
             self.simulation_id = simulation_id
             self.agent_updates = AioQueue()
-            self.simulation_status_updates= AioQueue()
+            self.simulation_status_updates = AioQueue()
             self.simulation_process = Process(
-                target=main, args=(agent_code_lines, agent_data, self.agent_updates, self.simulation_status_updates)
+                target=main,
+                args=(
+                    agent_code_lines,
+                    agent_data,
+                    self.agent_updates,
+                    self.simulation_status_updates,
+                ),
             )
             self.simulation_process.start()
-            asyncio.create_task(self.read_and_save_agent_updates(self.agent_updates, self.simulation_id))
-            asyncio.create_task(self.read_and_save_simulation_status_updates(self.simulation_status_updates, self.simulation_id))
+            asyncio.create_task(
+                self.read_and_save_agent_updates(self.agent_updates, self.simulation_id)
+            )
+            asyncio.create_task(
+                self.read_and_save_simulation_status_updates(
+                    self.simulation_status_updates, self.simulation_id
+                )
+            )
 
-    async def read_and_save_agent_updates(self, queue: AioQueue, simulation_id: str) -> None:
+    async def read_and_save_agent_updates(
+        self, queue: AioQueue, simulation_id: str
+    ) -> None:
         from src.dependencies.services.app import agent_updates_service
+
         queue_name = f"agent updates ({simulation_id})"
-        queue_size_task = asyncio.create_task(self.show_queue_size(queue, every_seconds=30, name=queue_name))
+        queue_size_task = asyncio.create_task(
+            self.show_queue_size(queue, every_seconds=30, name=queue_name)
+        )
         agent_updates_service = await agent_updates_service(self.app)
         logger.info(f"Started reading {queue_name} for simulation {simulation_id}")
         while True:
@@ -127,35 +147,50 @@ class State:
             await agent_updates_service.save_agent_updates([update])
         queue_size_task.cancel()
         logger.info(f"Stopped reading {queue_name} for simulation {simulation_id}")
-        logger.info(f"Unread items in {queue_name} queue after stopping: {queue.qsize()}")
-        
+        logger.info(
+            f"Unread items in {queue_name} queue after stopping: {queue.qsize()}"
+        )
+
     # TODO: reuse the code from 'read_and_save_agent_updates'
-    async def read_and_save_simulation_status_updates(self, queue: AioQueue, simulation_id: str) -> None:
+    async def read_and_save_simulation_status_updates(
+        self, queue: AioQueue, simulation_id: str
+    ) -> None:
         from src.dependencies.services.app import instance_service
         from src.services.instance import InstanceStatus
+
         queue_name = f"simulation status updates ({simulation_id})"
-        queue_size_task = asyncio.create_task(self.show_queue_size(queue, every_seconds=30, name=queue_name))
+        queue_size_task = asyncio.create_task(
+            self.show_queue_size(queue, every_seconds=30, name=queue_name)
+        )
         instance_service = await instance_service(self.app)
         logger.info(f"Started reading {queue_name} for simulation {simulation_id}")
         while True:
             update: Dict[str, Any] | None = await queue.coro_get()
             if update is None:
                 break
-            await instance_service.update_active_status(InstanceStatus(
-                status = update["status"],
-                num_agents=update["num_agents"],
-                broken_agents=update["broken_agents"],
-            ))
+            await instance_service.update_active_status(
+                InstanceStatus(
+                    status=update["status"],
+                    num_agents=update["num_agents"],
+                    broken_agents=update["broken_agents"],
+                )
+            )
         queue_size_task.cancel()
         logger.info(f"Stopped reading {queue_name} for simulation {simulation_id}")
-        logger.info(f"Unread items in {queue_name} queue after stopping: {queue.qsize()}")
+        logger.info(
+            f"Unread items in {queue_name} queue after stopping: {queue.qsize()}"
+        )
 
-    async def show_queue_size(self, queue: AioQueue, every_seconds: float, name: str) -> None:
+    async def show_queue_size(
+        self, queue: AioQueue, every_seconds: float, name: str
+    ) -> None:
         while True:
             logger.info(f"Unread items in {name} queue: {queue.qsize()}")
             await asyncio.sleep(every_seconds)
-            
-    async def await_empty_queue(self, queue: AioQueue, wait_before_seconds: float, every_seconds: float) -> None:
+
+    async def await_empty_queue(
+        self, queue: AioQueue, wait_before_seconds: float, every_seconds: float
+    ) -> None:
         await asyncio.sleep(wait_before_seconds)
         while True:
             if queue.empty():

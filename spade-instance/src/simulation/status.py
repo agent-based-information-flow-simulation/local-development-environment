@@ -12,10 +12,10 @@ from src.instance.status import Status
 from src.settings.simulation import simulation_settings
 
 if TYPE_CHECKING:  # pragma: no cover
+    from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent
     from spade.behaviour import CyclicBehaviour as Behaviour
-    from aioprocessing import AioQueue
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_STATUS", "INFO"))
@@ -60,7 +60,9 @@ def get_instance_status(num_agents: int, broken_agents: List[str]) -> Dict[str, 
 
 
 async def send_status(
-    agents: List[Agent], agent_num_behaviours: Dict[JID, int], simulation_status_updates: AioQueue
+    agents: List[Agent],
+    agent_num_behaviours: Dict[JID, int],
+    simulation_status_updates: AioQueue,
 ) -> Coroutine[Any, Any, None]:
     broken_agents = get_broken_agents(agents, agent_num_behaviours)
     instance_status = get_instance_status(len(agents), broken_agents)

@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from src.dependencies.injection import get_service_without_request
 from src.services.agent_updates import AgentUpdatesService
 from src.services.instance import InstanceService
-
-from src.dependencies.injection import get_service_without_request
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Coroutine
