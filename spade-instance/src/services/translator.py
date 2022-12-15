@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import httpx
 import orjson
 
-from src.exceptions.translator import TranslationException, TranslatorException
+from src.exceptions.translator import TranslationException,TranslatorException
 from src.services.base import BaseService
 from src.settings.translator import translator_settings
 

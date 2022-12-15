@@ -32,6 +32,6 @@ async def translate_aasm(agent_assembly_code: AgentsAssemblyCode):
             status_code=500,
             content={
                 "translator_version": __version__,
-                "reason": str(e),
+                "unexpected_reason": str(e),
             },
         )
