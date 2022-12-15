@@ -43,7 +43,7 @@ To see all the available options run the `help` command:
 The structure of the simulation run environment is presented below.
 - [Mongo](#mongo)
 - [Mongo GUI](#mongo-gui)
-- [Spade instance](#spade-instance)
+- [SPADE instance](#spade-instance)
 - [Translator](#translator)
 
 ### Mongo <a name = "mongo"></a>
