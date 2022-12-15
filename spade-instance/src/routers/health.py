@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from fastapi.responses import ORJSONResponse
 
-from src.dependencies.services import instance_service
+from src.dependencies.services.requests import instance_service
 from src.services.instance import InstanceService
 
 router = APIRouter(default_response_class=ORJSONResponse)

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse
 
-from src.dependencies.services import (
+from src.dependencies.services.requests import (
     graph_creator_service,
     instance_service,
     translator_service,

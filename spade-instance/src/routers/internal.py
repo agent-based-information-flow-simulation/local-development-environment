@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse
 
-from src.dependencies.services import instance_service
+from src.dependencies.services.requests import instance_service
 from src.exceptions.simulation import SimulationException
 from src.models.instance import InstanceStatus
 from src.services.instance import InstanceService

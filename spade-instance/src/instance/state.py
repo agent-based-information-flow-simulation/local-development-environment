@@ -17,7 +17,6 @@ from src.exceptions.simulation import (
 from src.instance.status import Status
 from src.simulation.main import main
 from aioprocessing import AioQueue
-import src.dependencies as deps
 import asyncio
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -102,9 +101,10 @@ class State:
             asyncio.create_task(self.read_and_save_agent_updates(self.agent_updates, self.simulation_id))
 
     async def read_and_save_agent_updates(self, agent_updates: AioQueue, simulation_id: str) -> None:
+        from src.dependencies.services.app import agent_updates as agent_updates_service
         logger.info(f"Started reading agent updates for simulation {simulation_id}")
         queue_size_task = asyncio.create_task(self.show_queue_size(agent_updates, every_seconds=30))
-        agent_updates_service: AgentUpdatesService = await deps.services.agent_updates(self.app)
+        agent_updates_service = await agent_updates_service(self.app)
         while True:
             update: Dict[str, Any] | None = await agent_updates.coro_get()
             if update is None:
@@ -119,7 +119,6 @@ class State:
         while True:
             logger.info(f"Unread items in agent updates queue: {agent_updates.qsize()}")
             await asyncio.sleep(every_seconds)
-
 
     async def kill_simulation_process(self) -> Coroutine[Any, Any, None]:
         logger.debug(f"Killing simulation, state: {await self.get_state()}")

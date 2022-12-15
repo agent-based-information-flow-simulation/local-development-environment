@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse, StreamingResponse
 
-from src.dependencies.services import timeseries_service
+from src.dependencies.services.requests import timeseries_service
 from src.exceptions.timeseries import TimeseriesDoesNotExistException
 from src.services.timeseries import TimeseriesService
 
