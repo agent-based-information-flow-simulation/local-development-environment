@@ -11,7 +11,7 @@ from spade.container import Container
 
 from src.settings.simulation import simulation_settings
 from src.simulation.code_generation import generate_agents
-from src.simulation.initialization import connect_agents, setup_agents
+from src.simulation.initialization import setup_agents
 from src.simulation.status import send_status
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -37,8 +37,6 @@ class SimulationInfiniteLoop:
         simulation_status_updates: AioQueue,
     ) -> Coroutine[Any, Any, None]:
         while self.RUNNING:
-            # TODO: remove this
-            # Container().reset()
             await send_status(agents, agent_behaviours, simulation_status_updates)
             await asyncio.sleep(status_annoucement_period)
 
@@ -53,10 +51,6 @@ async def run_simulation(
 
     logger.info("Generating agents...")
     agents = generate_agents(agent_code_lines, agent_data, agent_updates)
-
-    # TODO: remove this
-    # logger.info("Connecting agents to the communication server...")
-    # await connect_agents(agents)
 
     logger.info("Running setup...")
     agent_behaviours = setup_agents(agents)

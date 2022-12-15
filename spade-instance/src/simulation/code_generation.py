@@ -6,7 +6,7 @@ import logging
 import os
 import random
 import sys
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING
 
 import httpx
 import numpy
@@ -14,11 +14,11 @@ import orjson
 import spade
 
 from src.settings.backup import backup_settings
-from src.settings.communication_server import communication_server_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from aioprocessing import AioQueue
     from spade.agent import Agent
+    from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_CODE_GENERATION", "INFO"))
@@ -45,7 +45,7 @@ def generate_agents(
         agent_type = agent_data_dict["type"]
         del agent_data_dict["type"]
         agent = locals()[agent_type](
-            password=communication_server_settings.password,
+            password=None,
             backup_method="queue",
             backup_queue=agent_updates,
             backup_period=backup_settings.period,

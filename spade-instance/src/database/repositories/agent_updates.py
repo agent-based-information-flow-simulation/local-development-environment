@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from src.database.repositories.base import BaseRepository
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from typing import Any, Dict, List
 
 

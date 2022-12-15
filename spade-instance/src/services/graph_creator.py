@@ -8,13 +8,14 @@ import numpy
 
 from src.exceptions.graph_creator import GraphNotGeneratedException
 from src.services.base import BaseService
-from src.settings.communication_server import communication_server_settings
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from typing import Any, Callable, Dict, List
 
 
 class GraphCreatorService(BaseService):
+    fake_domain: str = "x"
+    
     def run_generated_algorithm(
         self, graph_code_lines: List[str]
     ) -> List[Dict[str, Any]]:
@@ -26,7 +27,7 @@ class GraphCreatorService(BaseService):
             ]
         except KeyError:
             raise GraphNotGeneratedException()
-        return algorithm(communication_server_settings.domain)
+        return algorithm(self.fake_domain)
 
     def _remove_imports(self, graph_code_lines: List[str]) -> List[str]:
         return list(

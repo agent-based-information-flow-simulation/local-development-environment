@@ -6,7 +6,7 @@ from src.database.repositories.timeseries import DbCursorWrapper, TimeseriesRepo
 from src.exceptions.timeseries import TimeseriesDoesNotExistException
 from src.services.base import BaseServiceWithRepository
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from typing import List
 
 

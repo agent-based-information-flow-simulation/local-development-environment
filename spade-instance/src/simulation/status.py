@@ -2,20 +2,16 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Any, Coroutine, Dict, List
-
-import httpx
-import orjson
-from aioxmpp.protocol import State
+from typing import TYPE_CHECKING
 
 from src.instance.status import Status
-from src.settings.simulation import simulation_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent
     from spade.behaviour import CyclicBehaviour as Behaviour
+    from typing import Any, Coroutine, Dict, List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_STATUS", "INFO"))
@@ -28,17 +24,7 @@ def get_broken_agents(
     broken_agents = []
 
     for agent in agents:
-        if (
-            agent is None
-            or not agent.is_alive()
-            # TODO: remove this
-            # or agent.client is None
-            # or agent.client.suspended
-            # or not agent.client.running
-            # or not agent.client.established
-            # or agent.client.stream is None
-            # or not agent.client.stream.running
-        ):
+        if agent is None or not agent.is_alive():
             broken_agents.append(str(agent.jid))
             continue
 
