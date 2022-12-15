@@ -64,7 +64,7 @@ class State:
 
     async def update_active_state(
         self, status: Status, num_agents: int, broken_agents: List[str]
-    ) -> Coroutine[Any, Any, None]:
+    ) -> None:
         logger.debug(f"Setting state: {status}, {num_agents}, {broken_agents}")
         async with self.mutex:
             if self.status == status.IDLE:
@@ -84,7 +84,7 @@ class State:
                 self.broken_agents,
             )
 
-    async def get_simulation_id(self) -> Coroutine[Any, Any, str]:
+    async def get_simulation_id(self) -> str:
         logger.debug("Getting simulation id")
         async with self.mutex:
             if self.simulation_id is None:
@@ -97,7 +97,7 @@ class State:
         simulation_id: str,
         agent_code_lines: List[str],
         agent_data: List[Dict[str, Any]],
-    ) -> Coroutine[Any, Any, None]:
+    ) -> None:
         logger.debug(
             f"Starting simulation {simulation_id}, state: {await self.get_state()}"
         )
@@ -197,7 +197,7 @@ class State:
                 break
             await asyncio.sleep(every_seconds)
 
-    async def kill_simulation_process(self) -> Coroutine[Any, Any, None]:
+    async def kill_simulation_process(self) -> None:
         logger.debug(f"Killing simulation, state: {await self.get_state()}")
         async with self.mutex:
             if self.simulation_process is None:
@@ -207,7 +207,7 @@ class State:
             self.simulation_process.kill()
             await self._clean_state()
 
-    async def get_simulation_memory_usage(self) -> Coroutine[Any, Any, float]:
+    async def get_simulation_memory_usage(self) -> float:
         logger.debug(
             f"Getting simulation memory usage, state: {await self.get_state()}"
         )
@@ -223,7 +223,7 @@ class State:
 
             return 0.0
 
-    async def verify_simulation_process(self) -> Coroutine[Any, Any, None]:
+    async def verify_simulation_process(self) -> None:
         logger.debug(f"Verify simulation process, state: {await self.get_state()}")
         async with self.mutex:
             if (
@@ -265,7 +265,7 @@ def create_simulation_state_startup_handler(app: FastAPI) -> Callable[[], None]:
 def create_simulation_state_shutdown_handler(
     app: FastAPI,
 ) -> Callable[[], Coroutine[Any, Any, None]]:
-    async def simulation_state_shutdown_handler() -> Coroutine[Any, Any, None]:
+    async def simulation_state_shutdown_handler() -> None:
         logger.info("Shutting down simulation")
         try:
             await get_app_simulation_state(app).kill_simulation_process()

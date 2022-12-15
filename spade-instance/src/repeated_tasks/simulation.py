@@ -26,7 +26,7 @@ def create_simulation_process_health_check_handler(
         raise_exceptions=False,
         logger=logger,
     )
-    async def simulation_process_health_check_handler() -> Awaitable[None]:
+    async def simulation_process_health_check_handler() -> None:
         await get_app_simulation_state(app).verify_simulation_process()
 
     return simulation_process_health_check_handler

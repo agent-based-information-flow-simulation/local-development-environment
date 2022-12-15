@@ -67,7 +67,7 @@ def get_db() -> Callable[[Request], AsyncIOMotorDatabase]:
 
 async def get_session_from_db_pool(
     db_client: AsyncIOMotorClient = Depends(get_db),
-) -> AsyncGenerator[AsyncIOMotorClientSession, None, None]:
+) -> AsyncGenerator[AsyncIOMotorClientSession, None]:
     async with await db_client.start_session() as session:
         yield session
 
