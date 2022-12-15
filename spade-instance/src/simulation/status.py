@@ -7,11 +7,12 @@ from typing import TYPE_CHECKING
 from src.instance.status import Status
 
 if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Coroutine, Dict, List
+
     from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent
     from spade.behaviour import CyclicBehaviour as Behaviour
-    from typing import Any, Coroutine, Dict, List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_STATUS", "INFO"))

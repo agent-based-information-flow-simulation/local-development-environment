@@ -49,7 +49,9 @@ class State:
         await self.await_empty_queue(
             self.simulation_status_updates, wait_before_seconds=0.5, every_seconds=0.5
         )
-        await self.await_empty_queue(self.agent_updates, wait_before_seconds=0.5, every_seconds=0.5)
+        await self.await_empty_queue(
+            self.agent_updates, wait_before_seconds=0.5, every_seconds=0.5
+        )
         await self.simulation_status_updates.coro_put(None)
         await self.agent_updates.coro_put(None)
 

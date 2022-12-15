@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from aasm import PanicException, __version__, get_spade_code
 from fastapi import APIRouter
-from starlette.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 from src.models import AgentsAssemblyCode, PythonSpadeCode
 
-router = APIRouter()
+router = APIRouter(default_response_class=ORJSONResponse)
 
 
 @router.post("/python/spade", response_model=PythonSpadeCode, status_code=200)
@@ -18,7 +18,7 @@ async def translate_aasm(agent_assembly_code: AgentsAssemblyCode):
             graph_code_lines=spade_code.graph_code_lines,
         )
     except PanicException as e:
-        return JSONResponse(
+        return ORJSONResponse(
             status_code=400,
             content={
                 "translator_version": __version__,
@@ -28,7 +28,7 @@ async def translate_aasm(agent_assembly_code: AgentsAssemblyCode):
             },
         )
     except Exception as e:
-        return JSONResponse(
+        return ORJSONResponse(
             status_code=500,
             content={
                 "translator_version": __version__,

@@ -5,7 +5,9 @@ name = "pypi"
 
 [packages]
 aasm = "==0.0.56"
-fastapi = {extras = ["all"], version = "*"}
+uvicorn = {extras = ["standard"], version = "*"}
+fastapi = "*"
+orjson = "*"
 
 [dev-packages]
 black = "*"

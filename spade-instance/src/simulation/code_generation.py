@@ -16,9 +16,10 @@ import spade
 from src.settings.backup import backup_settings
 
 if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Dict, List
+
     from aioprocessing import AioQueue
     from spade.agent import Agent
-    from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_CODE_GENERATION", "INFO"))

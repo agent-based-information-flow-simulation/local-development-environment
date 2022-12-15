@@ -8,10 +8,11 @@ from typing import TYPE_CHECKING
 from spade.behaviour import FSMBehaviour
 
 if TYPE_CHECKING:  # pragma: no cover
+    from typing import Dict, List
+
     from aioxmpp.structs import JID
     from spade.agent import Agent
     from spade.behaviour import CyclicBehaviour as Behaviour
-    from typing import  Dict, List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_INITIALIZATION", "INFO"))

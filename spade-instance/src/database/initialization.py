@@ -9,7 +9,7 @@ from pymongo.errors import CollectionInvalid
 
 from src.database.connection import get_app_db
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Callable
 
     from fastapi import FastAPI

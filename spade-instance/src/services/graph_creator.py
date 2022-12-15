@@ -9,13 +9,13 @@ import numpy
 from src.exceptions.graph_creator import GraphNotGeneratedException
 from src.services.base import BaseService
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, List
 
 
 class GraphCreatorService(BaseService):
     fake_domain: str = "x"
-    
+
     def run_generated_algorithm(
         self, graph_code_lines: List[str]
     ) -> List[Dict[str, Any]]:

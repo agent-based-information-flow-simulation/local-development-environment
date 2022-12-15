@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 import os
 
+import orjson
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse
-import orjson
 
 from src.dependencies.services.requests import (
     graph_creator_service,
@@ -44,10 +44,7 @@ async def create_simulation(
     except TranslatorException as e:
         raise HTTPException(500, f"Translator service exception: {str(e)}")
     except TranslationException as e:
-        return ORJSONResponse(
-            status_code=400,
-            content=orjson.loads(str(e))
-        )
+        return ORJSONResponse(status_code=400, content=orjson.loads(str(e)))
 
     try:
         agent_data = graph_creator_service.run_generated_algorithm(

@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 import httpx
 import orjson
 
-from src.exceptions.translator import TranslationException,TranslatorException
+from src.exceptions.translator import TranslationException, TranslatorException
 from src.services.base import BaseService
 from src.settings.translator import translator_settings
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from typing import List
 
 
