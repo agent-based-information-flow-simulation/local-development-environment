@@ -39,8 +39,6 @@ services:
       - TRANSLATOR_URL=http://translator:8000
       - WAIT_FOR_DB_ADDRESS=mongo:27017
     image: "madpeh/lde-spade-instance:${VERSION}"
-    ports:
-      - "8000:8000"
     restart: always
 
   translator:
