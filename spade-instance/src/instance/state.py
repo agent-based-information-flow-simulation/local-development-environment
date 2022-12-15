@@ -16,7 +16,7 @@ from src.exceptions.simulation import (
 )
 from src.instance.status import Status
 from src.simulation.main import main
-from aioprocessing import AioSimpleQueue
+from aioprocessing import AioQueue
 import src.dependencies as deps
 import asyncio
 
@@ -40,7 +40,7 @@ class State:
         self.simulation_id: str | None = None
         self.num_agents: int = 0
         self.broken_agents: List[str] = []
-        self.agent_updates: AioSimpleQueue | None = None
+        self.agent_updates: AioQueue | None = None
 
     def _clean_state(self) -> None:
         self.simulation_process = None
@@ -94,23 +94,31 @@ class State:
 
             self.status = Status.STARTING
             self.simulation_id = simulation_id
-            self.agent_updates = AioSimpleQueue()
+            self.agent_updates = AioQueue()
             self.simulation_process = Process(
                 target=main, args=(agent_code_lines, agent_data, self.agent_updates)
             )
             self.simulation_process.start()
             asyncio.create_task(self.read_and_save_agent_updates(self.agent_updates, self.simulation_id))
 
-    async def read_and_save_agent_updates(self, agent_updates: AioSimpleQueue, simulation_id: str) -> Coroutine[Any, Any, None]:
+    async def read_and_save_agent_updates(self, agent_updates: AioQueue, simulation_id: str) -> None:
         logger.info(f"Started reading agent updates for simulation {simulation_id}")
+        queue_size_task = asyncio.create_task(self.show_queue_size(agent_updates, every_seconds=30))
         agent_updates_service: AgentUpdatesService = await deps.services.agent_updates(self.app)
         while True:
-            update: Dict[str, Any] = await agent_updates.coro_get()
+            update: Dict[str, Any] | None = await agent_updates.coro_get()
             if update is None:
                 break
             update["simulation_id"] = simulation_id
             await agent_updates_service.save_agent_updates([update])
+        queue_size_task.cancel()
         logger.info(f"Stopped reading agent updates for simulation {simulation_id}")
+        logger.info(f"Unread items in agent updates queue after stopping: {agent_updates.qsize()}")
+
+    async def show_queue_size(self, agent_updates: AioQueue, every_seconds: float) -> None:
+        while True:
+            logger.info(f"Unread items in agent updates queue: {agent_updates.qsize()}")
+            await asyncio.sleep(every_seconds)
 
 
     async def kill_simulation_process(self) -> Coroutine[Any, Any, None]:

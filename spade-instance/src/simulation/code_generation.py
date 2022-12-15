@@ -18,7 +18,7 @@ from src.settings.communication_server import communication_server_settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from spade.agent import Agent
-    from aioprocessing import AioSimpleQueue
+    from aioprocessing import AioQueue
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_CODE_GENERATION", "INFO"))
@@ -29,7 +29,7 @@ def remove_imports(agent_code_lines: List[str]) -> List[str]:
 
 
 def generate_agents(
-    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioSimpleQueue
+    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue
 ) -> List[Agent]:
     agent_logger = logging.getLogger("agent")
     agent_logger.setLevel(level=os.environ.get("LOG_LEVEL_AGENT", "INFO"))
@@ -117,16 +117,16 @@ def generate_agents(
                     "float_lists": {
                     },
                 }
-                if self.agent.logger: self.agent.logger.debug(f'[{self.agent.jid}] Sending backup data: {data}')
-                try:
-                    await self.http_client.post(self.agent.backup_url, headers={"Content-Type": "application/json"}, data=orjson.dumps(data))
-                except Exception as e:
-                    if self.agent.logger: self.agent.logger.error(f'[{self.agent.jid}] Backup error type: {e.__class__}, additional info: {e}')
+                # if self.agent.logger: self.agent.logger.debug(f'[{self.agent.jid}] Sending backup data: {data}')
+                # try:
+                #     await self.http_client.post(self.agent.backup_url, headers={"Content-Type": "application/json"}, data=orjson.dumps(data))
+                # except Exception as e:
+                #     if self.agent.logger: self.agent.logger.error(f'[{self.agent.jid}] Backup error type: {e.__class__}, additional info: {e}')
                     
                 # ADDED
-                if self.agent.logger: self.agent.logger.info(f'[{self.agent.jid}] Sending backup data to queue')
+                # if self.agent.logger: self.agent.logger.info(f'[{self.agent.jid}] Sending backup data to queue')
                 await agent_updates.coro_put(data)
-                if self.agent.logger: self.agent.logger.info(f'[{self.agent.jid}] Sent backup data to queue')
+                # if self.agent.logger: self.agent.logger.info(f'[{self.agent.jid}] Sent backup data to queue')
 
         class initialize(spade.behaviour.OneShotBehaviour):
             def initialize_friends(self):
