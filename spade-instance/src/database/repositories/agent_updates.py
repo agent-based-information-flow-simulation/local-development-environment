@@ -9,11 +9,12 @@ from src.database.repositories.base import BaseRepository
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, List
 
+    from pymongo.results import InsertManyResult
+
 
 @dataclass
 class SavedAgentUpdates:
     num_updates: int
-    num_acknowledged: int
 
 
 class AgentUpdatesRepository(BaseRepository):
@@ -33,5 +34,5 @@ class AgentUpdatesRepository(BaseRepository):
             }
             for agent in batch
         ]
-        result = await self.collection.insert_many(data)
-        return SavedAgentUpdates(len(result.inserted_ids), result.acknowledged)
+        result: InsertManyResult = await self.collection.insert_many(data)
+        return SavedAgentUpdates(len(result.inserted_ids))
