@@ -17,6 +17,7 @@ from src.simulation.status import send_status
 if TYPE_CHECKING:  # pragma: no cover
     from aioxmpp.structs import JID
     from spade.agent import Agent
+    from aioprocessing import AioSimpleQueue
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_MAIN", "INFO"))
@@ -42,12 +43,12 @@ class SimulationInfiniteLoop:
 
 
 async def run_simulation(
-    agent_code_lines: List[str], agent_data: List[Dict[str, Any]]
+    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioSimpleQueue
 ) -> Coroutine[Any, Any, None]:
     Container().loop = asyncio.get_running_loop()
 
     logger.info("Generating agents...")
-    agents = generate_agents(agent_code_lines, agent_data)
+    agents = generate_agents(agent_code_lines, agent_data, agent_updates)
 
     # TODO: remove this
     # logger.info("Connecting agents to the communication server...")
@@ -62,6 +63,6 @@ async def run_simulation(
     )
 
 
-def main(agent_code_lines: List[str], agent_data: List[Dict[str, Any]]) -> None:
+def main(agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioSimpleQueue) -> None:
     uvloop.install()
-    asyncio.run(run_simulation(agent_code_lines, agent_data))
+    asyncio.run(run_simulation(agent_code_lines, agent_data, agent_updates))

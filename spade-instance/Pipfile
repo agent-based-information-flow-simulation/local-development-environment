@@ -15,6 +15,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 uvloop = "*"
 motor = "*"
+aioprocessing = "*"
 
 [dev-packages]
 black = "*"

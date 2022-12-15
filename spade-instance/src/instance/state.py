@@ -16,12 +16,16 @@ from src.exceptions.simulation import (
 )
 from src.instance.status import Status
 from src.simulation.main import main
+from aioprocessing import AioSimpleQueue
+import src.dependencies as deps
+import asyncio
 
 if TYPE_CHECKING:  # pragma: no cover
     from asyncio.locks import Lock
     from typing import Any, Callable, Coroutine, Dict, List, Tuple
 
     from fastapi import FastAPI
+    from src.services.agent_updates import AgentUpdatesService
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_STATE", "INFO"))
@@ -36,12 +40,14 @@ class State:
         self.simulation_id: str | None = None
         self.num_agents: int = 0
         self.broken_agents: List[str] = []
+        self.agent_updates: AioSimpleQueue | None = None
 
     def _clean_state(self) -> None:
         self.simulation_process = None
         self.simulation_id = None
         self.num_agents = 0
         self.broken_agents = []
+        self.agent_updates = None
 
     async def update_active_state(
         self, status: Status, num_agents: int, broken_agents: List[str]
@@ -88,10 +94,24 @@ class State:
 
             self.status = Status.STARTING
             self.simulation_id = simulation_id
+            self.agent_updates = AioSimpleQueue()
             self.simulation_process = Process(
-                target=main, args=(agent_code_lines, agent_data)
+                target=main, args=(agent_code_lines, agent_data, self.agent_updates)
             )
             self.simulation_process.start()
+            asyncio.create_task(self.read_and_save_agent_updates(self.agent_updates, self.simulation_id))
+
+    async def read_and_save_agent_updates(self, agent_updates: AioSimpleQueue, simulation_id: str) -> Coroutine[Any, Any, None]:
+        logger.info(f"Started reading agent updates for simulation {simulation_id}")
+        agent_updates_service: AgentUpdatesService = await deps.services.agent_updates(self.app)
+        while True:
+            update: Dict[str, Any] = await agent_updates.coro_get()
+            if update is None:
+                break
+            update["simulation_id"] = simulation_id
+            await agent_updates_service.save_agent_updates([update])
+        logger.info(f"Stopped reading agent updates for simulation {simulation_id}")
+
 
     async def kill_simulation_process(self) -> Coroutine[Any, Any, None]:
         logger.debug(f"Killing simulation, state: {await self.get_state()}")
@@ -101,6 +121,7 @@ class State:
 
             self.status = Status.IDLE
             self.simulation_process.kill()
+            await self.agent_updates.coro_put(None)
             self._clean_state()
 
     async def get_simulation_memory_usage(self) -> Coroutine[Any, Any, float]:
