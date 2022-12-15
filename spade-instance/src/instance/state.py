@@ -24,7 +24,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Coroutine, Dict, List, Tuple
 
     from fastapi import FastAPI
-    from aioprocessing import AioConnection
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_STATE", "INFO"))
@@ -43,9 +42,16 @@ class State:
         self.simulation_status_updates: AioQueue | None = None
 
     async def _clean_state(self) -> None:
+        # not the most elegant solution
+        # it waits for some time for the queues to be empty after the simulation is killed
+        # and then it puts poison pills into the queues
+        # it's been noticed that sometimes the poison pills are not processed if put immediately
+        # TODO: find a better solution
+        await self.await_empty_queue(self.simulation_status_updates, wait_before_seconds=0.5, every_seconds=0.5)
+        await self.await_empty_queue(self.agent_updates, wait_before_seconds=1.0, every_seconds=1.0)
         await self.simulation_status_updates.coro_put(None)
         await self.agent_updates.coro_put(None)
-            
+        
         self.simulation_process = None
         self.simulation_id = None
         self.num_agents = 0
@@ -109,7 +115,7 @@ class State:
 
     async def read_and_save_agent_updates(self, queue: AioQueue, simulation_id: str) -> None:
         from src.dependencies.services.app import agent_updates_service
-        queue_name = "agent updates"
+        queue_name = f"agent updates ({simulation_id})"
         queue_size_task = asyncio.create_task(self.show_queue_size(queue, every_seconds=30, name=queue_name))
         agent_updates_service = await agent_updates_service(self.app)
         logger.info(f"Started reading {queue_name} for simulation {simulation_id}")
@@ -123,10 +129,11 @@ class State:
         logger.info(f"Stopped reading {queue_name} for simulation {simulation_id}")
         logger.info(f"Unread items in {queue_name} queue after stopping: {queue.qsize()}")
         
+    # TODO: reuse the code from 'read_and_save_agent_updates'
     async def read_and_save_simulation_status_updates(self, queue: AioQueue, simulation_id: str) -> None:
         from src.dependencies.services.app import instance_service
         from src.services.instance import InstanceStatus
-        queue_name = "simulation status updates"
+        queue_name = f"simulation status updates ({simulation_id})"
         queue_size_task = asyncio.create_task(self.show_queue_size(queue, every_seconds=30, name=queue_name))
         instance_service = await instance_service(self.app)
         logger.info(f"Started reading {queue_name} for simulation {simulation_id}")
@@ -146,6 +153,13 @@ class State:
     async def show_queue_size(self, queue: AioQueue, every_seconds: float, name: str) -> None:
         while True:
             logger.info(f"Unread items in {name} queue: {queue.qsize()}")
+            await asyncio.sleep(every_seconds)
+            
+    async def await_empty_queue(self, queue: AioQueue, wait_before_seconds: float, every_seconds: float) -> None:
+        await asyncio.sleep(wait_before_seconds)
+        while True:
+            if queue.empty():
+                break
             await asyncio.sleep(every_seconds)
 
     async def kill_simulation_process(self) -> Coroutine[Any, Any, None]:
