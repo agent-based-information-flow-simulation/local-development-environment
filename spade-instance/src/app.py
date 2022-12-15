@@ -14,7 +14,6 @@ from src.instance.state import (
 )
 from src.repeated_tasks.simulation import create_simulation_process_health_check_handler
 from src.routers.health import router as health_router
-from src.routers.internal import router as internal_router
 from src.routers.simulation import router as simulation_router
 from src.routers.timeseries import router as timeseries_router
 from src.settings.logging import configure_logging
@@ -25,7 +24,6 @@ def get_app(unit_tests: bool = False) -> FastAPI:
 
     app = FastAPI()
     app.include_router(health_router)
-    app.include_router(internal_router)
     app.include_router(simulation_router)
     app.include_router(timeseries_router)
 

@@ -34,16 +34,17 @@ class SimulationInfiniteLoop:
         agents: List[Agent],
         agent_behaviours: Dict[JID, List[spade.behaviour.PeriodicBehaviour]],
         status_annoucement_period: int,
+        simulation_status_updates: AioQueue
     ) -> Coroutine[Any, Any, None]:
         while self.RUNNING:
             # TODO: remove this
             # Container().reset()
-            await send_status(agents, agent_behaviours)
+            await send_status(agents, agent_behaviours, simulation_status_updates)
             await asyncio.sleep(status_annoucement_period)
 
 
 async def run_simulation(
-    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue
+    agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue, simulation_status_updates: AioQueue
 ) -> Coroutine[Any, Any, None]:
     Container().loop = asyncio.get_running_loop()
 
@@ -59,10 +60,10 @@ async def run_simulation(
 
     logger.info(f"Simulation started with {len(agents)} agents.")
     await SimulationInfiniteLoop().run(
-        agents, agent_behaviours, simulation_settings.status_period
+        agents, agent_behaviours, simulation_settings.status_period, simulation_status_updates
     )
 
 
-def main(agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue) -> None:
+def main(agent_code_lines: List[str], agent_data: List[Dict[str, Any]], agent_updates: AioQueue, simulation_status_updates: AioQueue) -> None:
     uvloop.install()
-    asyncio.run(run_simulation(agent_code_lines, agent_data, agent_updates))
+    asyncio.run(run_simulation(agent_code_lines, agent_data, agent_updates, simulation_status_updates))

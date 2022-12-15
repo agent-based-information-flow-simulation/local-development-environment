@@ -6,13 +6,19 @@ from uuid import uuid4
 import psutil
 
 from src.instance.status import Status
-from src.models.instance import InstanceStatus
+from dataclasses import dataclass
 from src.services.base import BaseServiceWithState
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, List, Tuple
 
     from src.instance.state import State
+
+@dataclass
+class InstanceStatus:
+    status: Status
+    num_agents: int
+    broken_agents: List[str]
 
 
 class InstanceService(BaseServiceWithState):

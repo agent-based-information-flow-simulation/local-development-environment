@@ -12,7 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from fastapi import FastAPI
 
-agent_updates: Callable[
+agent_updates_service: Callable[
     [FastAPI], Coroutine[Any, Any, AgentUpdatesService]
 ] = get_service_without_request(AgentUpdatesService)
 instance_service: Callable[
