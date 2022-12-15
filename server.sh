@@ -2,7 +2,7 @@
 
 function usage() {
     echo "Usage: $0 {start|stop|clean|stats|publish|unit-test|mongo-dump|mongo-restore}"
-    echo "       start [-d: dev mode]: start the server"
+    echo "       start [-d: dev mode, -k: do not detach]: start the server"
     echo "       stop: stop the server"
     echo "       clean: stop the server and remove all docker data"
     echo "       stats: print stats from all services"
@@ -15,10 +15,11 @@ function usage() {
 
 function start() {
     DEV=0
-    PUBLISH=0
-    while getopts dp opt; do
+    DETACH=1
+    while getopts dk opt; do
         case $opt in
             d) DEV=1 ;;
+            k) DETACH=0 ;;
             *) usage ;;
         esac
     done
@@ -29,8 +30,14 @@ function start() {
         COMPOSE_FILE=docker-compose.yml
     fi
 
+    if [ "$DETACH" -eq "0" ]; then
+        DETACH_FLAG="--"
+    else
+        DETACH_FLAG="--detach"
+    fi
+
     source .version
-    if env VERSION="${VERSION}" docker-compose -f ./"$COMPOSE_FILE" up --build; then
+    if env VERSION="${VERSION}" docker compose --file ./"$COMPOSE_FILE" up --build "$DETACH_FLAG"; then
         echo "Version: ${VERSION}"
         echo "OK"
     else
@@ -40,13 +47,16 @@ function start() {
 }
 
 function stop() {
-    docker stack rm sre
+    docker compose --file ./docker-compose.dev.yml stop --timeout 5
+    docker compose --file ./docker-compose.test.yml stop --timeout 5
+    docker compose --file ./docker-compose.yml stop --timeout 5
 }
 
 function clean() {
     stop
-    docker swarm leave --force
-    docker system prune --all --volumes
+    docker compose --file ./docker-compose.dev.yml down --timeout 5
+    docker compose --file ./docker-compose.test.yml down --timeout 5 
+    docker compose --file ./docker-compose.yml down --timeout 5
 }
 
 function stats() {
@@ -65,16 +75,22 @@ function publish() {
         exit 1
     fi
 
-    if [ "$VERSION_ANSWER" == "y" ]; then
-        env VERSION="${VERSION}" docker-compose -f docker-compose.yml build --parallel && \
-        env VERSION="${VERSION}" docker-compose -f docker-compose.yml push && \
-        echo "published version ${VERSION}"
+    SUCCESS=1
+
+    if [ "$SUCCESS" -eq "1" ] && [ "$VERSION_ANSWER" == "y" ]; then
+        SUCCESS=0
+        env VERSION="${VERSION}" docker compose --file docker-compose.yml build --parallel && \
+        env VERSION="${VERSION}" docker compose --file docker-compose.yml push && \
+        echo "published version ${VERSION}" && \
+        SUCCESS=1
     fi
 
-    if [ "$LATEST_ANSWER" == "y" ]; then
-        env VERSION=latest docker-compose -f docker-compose.yml build --parallel && \
-        env VERSION=latest docker-compose -f docker-compose.yml push && \
-        echo "published version latest"
+    if [ "$SUCCESS" -eq "1" ] && [ "$LATEST_ANSWER" == "y" ]; then
+        SUCCESS=0
+        env VERSION=latest docker compose --file docker-compose.yml build --parallel && \
+        env VERSION=latest docker compose --file docker-compose.yml push && \
+        echo "published version latest" && \
+        SUCCESS=1
     fi
 }
 
@@ -83,7 +99,7 @@ function unit-test() {
         echo "missing service name"
         usage
     fi
-    docker-compose -f docker-compose.test.yml up "$1" --build
+    docker compose --file docker-compose.test.yml up "$1" --build
 }
 
 function mongo-dump() {

@@ -18,7 +18,7 @@ If you wrote a patch, open a new pull request.
 ## Development environment
 To start the development environment, run the `start` command with appropriate flags:
 ```
-./server.sh start -d
+./server.sh start -dk
 ```
 Windows is currently not supported.
 
