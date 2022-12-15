@@ -42,7 +42,8 @@ class InstanceService(BaseServiceWithState):
         self, agent_code_lines: List[str], agent_data: List[Dict[str, Any]]
     ) -> str:
         simulation_id = uuid4().hex
-        self.state.start_simulation_process(simulation_id, agent_code_lines, agent_data)
+        await self.state.start_simulation_process(simulation_id, agent_code_lines, agent_data)
+        return simulation_id
 
     async def kill_simulation(self) -> None:
         await self.state.kill_simulation_process()

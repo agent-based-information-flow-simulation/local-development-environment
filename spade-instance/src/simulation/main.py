@@ -35,7 +35,8 @@ class SimulationInfiniteLoop:
         status_annoucement_period: int,
     ) -> Coroutine[Any, Any, None]:
         while self.RUNNING:
-            Container().reset()
+            # TODO: remove this
+            #Container().reset()
             await send_status(agents, agent_behaviours)
             await asyncio.sleep(status_annoucement_period)
 
@@ -48,8 +49,9 @@ async def run_simulation(
     logger.info("Generating agents...")
     agents = generate_agents(agent_code_lines, agent_data)
 
-    logger.info("Connecting agents to the communication server...")
-    await connect_agents(agents)
+    # TODO: remove this
+    #logger.info("Connecting agents to the communication server...")
+    #await connect_agents(agents)
 
     logger.info("Running setup...")
     agent_behaviours = setup_agents(agents)

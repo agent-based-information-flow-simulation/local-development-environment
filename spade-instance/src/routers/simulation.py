@@ -15,7 +15,7 @@ from src.dependencies.services import (
 from src.exceptions.graph_creator import GraphNotGeneratedException
 from src.exceptions.simulation import SimulationException
 from src.exceptions.translator import TranslationException, TranslatorException
-from src.models.simulation import CreateSimulation, DeletedSimulation
+from src.models.simulation import CreateSimulation, DeletedSimulation, CreatedSimulation
 from src.services.graph_creator import GraphCreatorService
 from src.services.instance import InstanceService
 from src.services.translator import TranslatorService
@@ -26,7 +26,7 @@ logger.setLevel(level=os.environ.get("LOG_LEVEL_ROUTERS_SIMULATION", "INFO"))
 router = APIRouter(default_response_class=ORJSONResponse)
 
 
-@router.post("/simulation", status_code=201)
+@router.post("/simulation", response_model=CreatedSimulation, status_code=201)
 async def create_simulation(
     simulation_data: CreateSimulation,
     instance_service: InstanceService = Depends(instance_service),
@@ -53,11 +53,13 @@ async def create_simulation(
         raise HTTPException(500, str(e))
 
     try:
-        await instance_service.start_simulation(
+        simulation_id = await instance_service.start_simulation(
             translated_code.agent_code_lines, agent_data
         )
     except SimulationException as e:
         raise HTTPException(400, str(e))
+    
+    return CreatedSimulation(simulation_id=simulation_id)
 
 
 @router.delete("/simulation", response_model=DeletedSimulation, status_code=200)

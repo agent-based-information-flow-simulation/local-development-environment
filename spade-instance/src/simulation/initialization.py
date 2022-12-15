@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(level=os.environ.get("LOG_LEVEL_SIMULATION_INITIALIZATION", "INFO"))
 
 
+# TODO: remove this
 # https://github.com/agent-based-information-flow-simulation/spade/blob/6a857c2ae0a86b3bdfd20ccfcd28a11e1c6db81e/spade/agent.py#L171
 # TLS is set to false
 async def async_register(agent: Agent) -> Coroutine[Any, Any, None]:  # pragma: no cover
@@ -34,6 +35,7 @@ async def async_register(agent: Agent) -> Coroutine[Any, Any, None]:  # pragma: 
     await aioxmpp.ibr.register(stream, query)
 
 
+# TODO: remove this
 # https://github.com/agent-based-information-flow-simulation/spade/blob/6a857c2ae0a86b3bdfd20ccfcd28a11e1c6db81e/spade/agent.py#L93
 # TLS is set to false
 # register and connect client
@@ -61,6 +63,7 @@ async def async_connect(agent: Agent) -> Coroutine[Any, Any, None]:  # pragma: n
     await agent._hook_plugin_after_connection()
 
 
+# TODO: remove this
 async def connect_with_retry(
     agent: Agent, retry_after: int
 ) -> Coroutine[Any, Any, None]:
@@ -78,6 +81,7 @@ async def connect_with_retry(
     logger.info(f"[{agent.jid}] Connected")
 
 
+# TODO: remove this
 async def connect_agents(agents: List[Agent]) -> Coroutine[Any, Any, None]:
     concurrency = simulation_settings.registration_max_concurrency
     semaphore = asyncio.Semaphore(concurrency)

@@ -30,12 +30,13 @@ def get_broken_agents(
         if (
             agent is None
             or not agent.is_alive()
-            or agent.client is None
-            or agent.client.suspended
-            or not agent.client.running
-            or not agent.client.established
-            or agent.client.stream is None
-            or not agent.client.stream.running
+            # TODO: remove this
+            # or agent.client is None
+            # or agent.client.suspended
+            # or not agent.client.running
+            # or not agent.client.established
+            # or agent.client.stream is None
+            # or not agent.client.stream.running
         ):
             broken_agents.append(str(agent.jid))
             continue
