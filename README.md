@@ -40,7 +40,7 @@ To see all the available options run the `help` command:
 
 ## Structure <a name = "structure"></a>
 
-The structure of the simulation run environment is presented below.
+The structure of the local development environment is presented below.
 - [Mongo](#mongo)
 - [Mongo GUI](#mongo-gui)
 - [SPADE instance](#spade-instance)
@@ -61,7 +61,7 @@ Host port mapping (dev only):
 * `27017`
 
 ### Mongo GUI (dev only) <a name = "mongo-gui"></a>
-The service provides a graphical user interface to access the data stored inside the timeseries database.
+The service provides a graphical user interface to access the data stored inside the database.
 
 Environment variables:
 * `ME_CONFIG_MONGODB_ADMINUSERNAME` - MongoDB root user (i.e., root)
@@ -80,7 +80,7 @@ The latter one is created while starting the simulation.
 The API is used to communicate and manage the instance.
 The service sends the running agents' state updates to the Mongo service.
 
-[Docker Hub](https://hub.docker.com/repository/docker/madpeh/lde-spade-instance)
+[Docker Hub](https://hub.docker.com/r/madpeh/lde-spade-instance)
 
 Environment variables:
 * `ACTIVE_SIMULATION_STATUS_ANNOUCEMENT_PERIOD` - active simulation process status announcement period (i.e., 10)
@@ -109,7 +109,7 @@ Host port mapping (dev only):
 ### Translator <a name = "translator"></a>
 The service's Web API enables the translation of Agents Assembly code using the `aasm` package.
 
-[Docker Hub](https://hub.docker.com/repository/docker/madpeh/lde-translator)
+[Docker Hub](https://hub.docker.com/r/madpeh/lde-translator)
 
 Environment variables:
 * `PORT` - listen port (i.e., 8000)
