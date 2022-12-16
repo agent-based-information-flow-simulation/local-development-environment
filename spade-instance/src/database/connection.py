@@ -40,11 +40,8 @@ def get_app_db_client(app: FastAPI) -> AsyncIOMotorClient:
         raise DatabaseClientNotSetException()
 
 
-def get_db_client() -> Callable[[Request], AsyncIOMotorClient]:
-    def _get_db_client(request: Request) -> AsyncIOMotorClient:
-        return get_app_db_client(request.app)
-
-    return _get_db_client
+def get_db_client(request: Request) -> AsyncIOMotorClient:
+    return get_app_db_client(request.app)
 
 
 def set_app_db(app: FastAPI, db: AsyncIOMotorDatabase) -> None:
@@ -58,15 +55,12 @@ def get_app_db(app: FastAPI) -> AsyncIOMotorDatabase:
         raise DatabaseNotSetException()
 
 
-def get_db() -> Callable[[Request], AsyncIOMotorDatabase]:
-    def _get_db(request: Request) -> AsyncIOMotorDatabase:
-        return get_app_db(request.app)
-
-    return _get_db
+def get_db(request: Request) -> AsyncIOMotorDatabase:
+    return get_app_db(request.app)
 
 
 async def get_session_from_db_pool(
-    db_client: AsyncIOMotorClient = Depends(get_db),
+    db_client: AsyncIOMotorClient = Depends(get_db_client),
 ) -> AsyncGenerator[AsyncIOMotorClientSession, None]:
     async with await db_client.start_session() as session:
         yield session

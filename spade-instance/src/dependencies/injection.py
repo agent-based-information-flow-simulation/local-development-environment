@@ -56,7 +56,7 @@ def get_service(
     elif issubclass(service_type, BaseServiceWithState):
 
         def _get_service_with_state(
-            state: State = Depends(get_simulation_state()),
+            state: State = Depends(get_simulation_state),
         ) -> BaseService:
             return service_type(state)
 
