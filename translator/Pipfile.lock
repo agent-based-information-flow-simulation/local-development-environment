@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "895350ded1995b549fea9adba6026ed65d9feaf0b9a574af6d8892e8f9a79cf3"
+            "sha256": "6f3fba6c9df8f3260929b504a8a2648de4324e03567c3fecb4c6f6b3ef3a5096"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,11 +18,11 @@
     "default": {
         "aasm": {
             "hashes": [
-                "sha256:f529c068c18a65f67f4b62e4dad4768dcd83e51f0c3ea9e1e7ed7c713a665836",
-                "sha256:fc74242d8b58c3451b1447b991edb6a44e22ca63afe7946313c52363ea8955a5"
+                "sha256:510c2719f60af1a947cffabcc0663c90382d08ab1d9f3cc7713d9405c1317d9e",
+                "sha256:f854e2f88310b5c801f90eb9465bba5f5a0551f523372955b9c51556e318b054"
             ],
             "index": "pypi",
-            "version": "==0.0.56"
+            "version": "==0.0.57"
         },
         "anyio": {
             "hashes": [
