@@ -38,7 +38,7 @@ services:
       - SIMULATION_PROCESS_HEALTH_CHECK_PERIOD=5
       - TRANSLATOR_URL=http://translator:8000
       - WAIT_FOR_DB_ADDRESS=mongo:27017
-    image: "madpeh/lde-spade-instance:${VERSION}"
+    image: "aasm/lde-spade-instance:${VERSION}"
     restart: always
 
   translator:
@@ -47,7 +47,7 @@ services:
     environment:
       - PORT=8000
       - RELOAD=False
-    image: "madpeh/lde-translator:${VERSION}"
+    image: "aasm/lde-translator:${VERSION}"
     restart: always
 
 volumes:
