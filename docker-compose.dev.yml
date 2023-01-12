@@ -67,3 +67,23 @@ services:
     restart: always
     volumes:
       - ./translator/src:/api/src
+
+  user-interface:
+    container_name: lde-user-interface
+    environment:
+      - PORT=80
+    image: "aasm/li-user-interface:latest"
+    volumes:
+      - user-interface-data:/app/node_modules
+    restart: always
+
+  proxy:
+    container_name: lde-ui-proxy
+    image: "aasm/li-proxy:latest"
+    ports:
+      - "80:80"
+      - "8008:7687"
+    restart: always
+
+volumes:
+  user-interface-data

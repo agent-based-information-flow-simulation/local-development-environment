@@ -40,7 +40,7 @@ async def create_simulation(
         raise HTTPException(400, "Simulation is already running.")
 
     try:
-        translated_code = await translator_service.translate(simulation_data.code_lines)
+        translated_code = await translator_service.translate(simulation_data.aasm_code_lines)
     except TranslatorException as e:
         raise HTTPException(500, f"Translator service exception: {str(e)}")
     except TranslationException as e:

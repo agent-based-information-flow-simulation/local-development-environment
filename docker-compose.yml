@@ -49,6 +49,25 @@ services:
       - RELOAD=False
     image: "aasm/lde-translator:${VERSION}"
     restart: always
+  
+  user-interface:
+    container_name: lde-user-interface
+    environment:
+      - PORT=80
+    image: "aasm/li-user-interface:${VERSION}"
+    volumes:
+      - user-interface-data:/app/node_modules
+    restart: always
+
+  proxy:
+    container_name: lde-ui-proxy
+    image: "aasm/li-proxy:${VERSION}"
+    ports:
+      - "80:80"
+      - "8008:7687"
+    restart: always
+
 
 volumes:
   mongo-data:
+  user-interface-data:

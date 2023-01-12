@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 class CreateSimulation(BaseModel):
-    code_lines: List[str]
+    aasm_code_lines: List[str]
 
     class Config:
         json_loads = orjson.loads
