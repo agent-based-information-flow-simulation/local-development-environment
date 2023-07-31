@@ -26,10 +26,18 @@ logger.setLevel(level=os.environ.get("LOG_LEVEL_ROUTERS_SIMULATION", "INFO"))
 
 router = APIRouter(default_response_class=ORJSONResponse)
 
+
 @router.get("/simulation", status_code=200)
-async def get_simulation_state(instance_service: InstanceService = Depends(instance_service)):
+async def get_simulation_state(
+    instance_service: InstanceService = Depends(instance_service),
+):
     instance_info = await instance_service.get_instance_information()
-    return {"response": "success", "instance_info": instance_info, "environment": "local-development"}
+    return {
+        "response": "success",
+        "instance_info": instance_info,
+        "environment": "local-development",
+    }
+
 
 @router.post("/simulation", response_model=CreatedSimulation, status_code=201)
 async def create_simulation(
@@ -44,7 +52,9 @@ async def create_simulation(
         raise HTTPException(400, "Simulation is already running.")
 
     try:
-        translated_code = await translator_service.translate(simulation_data.aasm_code_lines, simulation_data.module_code_lines)
+        translated_code = await translator_service.translate(
+            simulation_data.aasm_code_lines, simulation_data.module_code_lines
+        )
     except TranslatorException as e:
         raise HTTPException(500, f"Translator service exception: {str(e)}")
     except TranslationException as e:

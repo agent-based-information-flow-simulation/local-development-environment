@@ -21,10 +21,12 @@ class TranslatedCode:
 
 
 class TranslatorService(BaseService):
-    async def translate(self, aasm_code_lines: List[str], module_code_lines: List[List[str]]) -> TranslatedCode:
+    async def translate(
+        self, aasm_code_lines: List[str], module_code_lines: List[List[str]]
+    ) -> TranslatedCode:
         url = f"{translator_settings.url}/python/spade"
 
-        joined_module_lines : List [str]= []
+        joined_module_lines: List[str] = []
         for mcl in module_code_lines:
             joined_module_lines.extend(mcl)
             joined_module_lines.append("\n")
@@ -34,7 +36,12 @@ class TranslatorService(BaseService):
                 response = await client.post(
                     url,
                     headers={"Content-Type": "application/json"},
-                    data=orjson.dumps({"code_lines": aasm_code_lines, "module_lines": joined_module_lines})
+                    data=orjson.dumps(
+                        {
+                            "code_lines": aasm_code_lines,
+                            "module_lines": joined_module_lines,
+                        }
+                    ),
                 )
         except Exception as e:
             raise TranslatorException(str(e))
