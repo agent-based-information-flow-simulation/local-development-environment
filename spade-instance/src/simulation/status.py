@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Coroutine, Dict, List
 
 from src.instance.status import Status
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Coroutine, Dict, List
-
     from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent
@@ -48,9 +46,9 @@ def get_instance_status(num_agents: int, broken_agents: List[str]) -> Dict[str, 
 
 async def send_status(
     agents: List[Agent],
-    agent_num_behaviours: Dict[JID, int],
+    agent_num_behaviours: Dict[JID, Behaviour],
     simulation_status_updates: AioQueue,
-) -> Coroutine[Any, Any, None]:
+    ):
     broken_agents = get_broken_agents(agents, agent_num_behaviours)
     instance_status = get_instance_status(len(agents), broken_agents)
     logger.info(f"Sending status to spade api: {instance_status}")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.database.connection import (
     create_shutdown_db_connection_handler,
@@ -23,6 +24,15 @@ def get_app(unit_tests: bool = False) -> FastAPI:
     configure_logging()
 
     app = FastAPI()
+    origins = ["*"]
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     app.include_router(health_router)
     app.include_router(simulation_router)
     app.include_router(timeseries_router)

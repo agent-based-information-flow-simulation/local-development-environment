@@ -46,11 +46,11 @@ class InstanceService(BaseServiceWithState):
         )
 
     async def start_simulation(
-        self, agent_code_lines: List[str], agent_data: List[Dict[str, Any]]
+        self, agent_code_lines: List[str], module_code_lines: List[str], agent_data: List[Dict[str, Any]]
     ) -> str:
         simulation_id = uuid4().hex[:8]
         await self.state.start_simulation_process(
-            simulation_id, agent_code_lines, agent_data
+            simulation_id, agent_code_lines, module_code_lines, agent_data
         )
         return simulation_id
 
@@ -58,7 +58,12 @@ class InstanceService(BaseServiceWithState):
         await self.state.kill_simulation_process()
 
     async def get_state(self) -> Tuple[Status, str, int, List[str]]:
-        return await self.state.get_state()
+        state = await self.state.get_state()
+        # ugly conversion but state[1] can be None
+        if state[1] is None:
+            return (state[0], "", state[2], state[3])
+        else:
+            return (state[0], state[1], state[2], state[3])
 
     async def get_simulation_id(self) -> str | None:
         _, simulation_id, _, _ = await self.state.get_state()
