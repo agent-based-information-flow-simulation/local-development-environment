@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Coroutine, Dict, List
 
 from src.instance.status import Status
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Coroutine, Dict, List
-
     from aioprocessing import AioQueue
     from aioxmpp.structs import JID
     from spade.agent import Agent

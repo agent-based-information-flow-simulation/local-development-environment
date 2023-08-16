@@ -10,8 +10,8 @@ import uvloop
 from spade.container import Container
 
 from src.settings.simulation import simulation_settings
-from src.simulation.code_generation import generate_agents
-from src.simulation.initialization import setup_agents
+from src.simulation.code_generation import generate_agents, parse_module_code
+from src.simulation.initialization import connect_agents, setup_agents
 from src.simulation.status import send_status
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -35,22 +35,30 @@ class SimulationInfiniteLoop:
         agent_behaviours: Dict[JID, List[spade.behaviour.PeriodicBehaviour]],
         status_annoucement_period: int,
         simulation_status_updates: AioQueue,
-    ) -> Coroutine[Any, Any, None]:
+    ):
         while self.RUNNING:
+            Container().reset()
             await send_status(agents, agent_behaviours, simulation_status_updates)
             await asyncio.sleep(status_annoucement_period)
 
 
 async def run_simulation(
     agent_code_lines: List[str],
+    module_code_lines: List[str],
     agent_data: List[Dict[str, Any]],
     agent_updates: AioQueue,
     simulation_status_updates: AioQueue,
-) -> Coroutine[Any, Any, None]:
+):
     Container().loop = asyncio.get_running_loop()
 
+    logger.info("Loading modules...")
+    modules = parse_module_code(module_code_lines)
+
     logger.info("Generating agents...")
-    agents = generate_agents(agent_code_lines, agent_data, agent_updates)
+    agents = generate_agents(agent_code_lines, modules, agent_data, agent_updates)
+
+    logger.info("Connecting agents to the communication server...")
+    await connect_agents(agents)
 
     logger.info("Running setup...")
     agent_behaviours = setup_agents(agents)
@@ -66,6 +74,7 @@ async def run_simulation(
 
 def main(
     agent_code_lines: List[str],
+    module_code_lines: List[str],
     agent_data: List[Dict[str, Any]],
     agent_updates: AioQueue,
     simulation_status_updates: AioQueue,
@@ -73,6 +82,6 @@ def main(
     uvloop.install()
     asyncio.run(
         run_simulation(
-            agent_code_lines, agent_data, agent_updates, simulation_status_updates
+            agent_code_lines, module_code_lines, agent_data, agent_updates, simulation_status_updates
         )
     )
