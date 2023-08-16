@@ -4,7 +4,7 @@ from aasm import PanicException, __version__, get_spade_code, get_modules_for_ta
 from fastapi import APIRouter
 from fastapi.responses import ORJSONResponse
 
-from src.models import AgentsAssemblyCode, PythonSpadeCode
+from .models import AgentsAssemblyCode, PythonSpadeCode
 
 router = APIRouter(default_response_class=ORJSONResponse)
 

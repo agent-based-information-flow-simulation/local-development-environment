@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 class AgentsAssemblyCode(BaseModel):
     code_lines: List[str]
-    module_lines: List[str]
+    module_lines: List[List[str]]
 
     class Config:
         json_loads = orjson.loads
