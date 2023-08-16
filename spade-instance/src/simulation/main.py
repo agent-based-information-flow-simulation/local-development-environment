@@ -11,7 +11,7 @@ from spade.container import Container
 
 from src.settings.simulation import simulation_settings
 from src.simulation.code_generation import generate_agents, parse_module_code
-from src.simulation.initialization import connect_agents, setup_agents
+from src.simulation.initialization import setup_agents
 from src.simulation.status import send_status
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -56,9 +56,6 @@ async def run_simulation(
 
     logger.info("Generating agents...")
     agents = generate_agents(agent_code_lines, modules, agent_data, agent_updates)
-
-    logger.info("Connecting agents to the communication server...")
-    await connect_agents(agents)
 
     logger.info("Running setup...")
     agent_behaviours = setup_agents(agents)
