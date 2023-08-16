@@ -69,7 +69,7 @@ async def create_simulation(
 
     try:
         simulation_id = await instance_service.start_simulation(
-            translated_code.agent_code_lines, agent_data
+            translated_code.agent_code_lines, translated_code.module_code_lines, agent_data
         )
     except SimulationException as e:
         raise HTTPException(400, str(e))

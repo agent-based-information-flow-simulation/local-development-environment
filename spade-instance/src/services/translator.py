@@ -17,6 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
 @dataclass
 class TranslatedCode:
     agent_code_lines: List[str]
+    module_code_lines: List[str]
     graph_code_lines: List[str]
 
 
@@ -26,10 +27,10 @@ class TranslatorService(BaseService):
     ) -> TranslatedCode:
         url = f"{translator_settings.url}/python/spade"
 
-        joined_module_lines: List[str] = []
-        for mcl in module_code_lines:
-            joined_module_lines.extend(mcl)
-            joined_module_lines.append("\n")
+        # joined_module_lines: List[str] = []
+        # for mcl in module_code_lines:
+        #     joined_module_lines.extend(mcl)
+        #     joined_module_lines.append("\n")
 
         try:
             async with httpx.AsyncClient() as client:
@@ -39,7 +40,7 @@ class TranslatorService(BaseService):
                     data=orjson.dumps(
                         {
                             "code_lines": aasm_code_lines,
-                            "module_lines": joined_module_lines,
+                            "module_lines": module_code_lines,
                         }
                     ),
                 )
@@ -54,4 +55,5 @@ class TranslatorService(BaseService):
         return TranslatedCode(
             agent_code_lines=body["agent_code_lines"],
             graph_code_lines=body["graph_code_lines"],
+            module_code_lines=body["module_code_lines"],
         )
