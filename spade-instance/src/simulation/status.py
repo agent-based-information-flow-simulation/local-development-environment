@@ -46,9 +46,9 @@ def get_instance_status(num_agents: int, broken_agents: List[str]) -> Dict[str, 
 
 async def send_status(
     agents: List[Agent],
-    agent_num_behaviours: Dict[JID, int],
+    agent_num_behaviours: Dict[JID, Behaviour],
     simulation_status_updates: AioQueue,
-) -> Coroutine[Any, Any, None]:
+    ):
     broken_agents = get_broken_agents(agents, agent_num_behaviours)
     instance_status = get_instance_status(len(agents), broken_agents)
     logger.info(f"Sending status to spade api: {instance_status}")

@@ -37,7 +37,6 @@ class SimulationInfiniteLoop:
         simulation_status_updates: AioQueue,
     ):
         while self.RUNNING:
-            Container().reset()
             await send_status(agents, agent_behaviours, simulation_status_updates)
             await asyncio.sleep(status_annoucement_period)
 
