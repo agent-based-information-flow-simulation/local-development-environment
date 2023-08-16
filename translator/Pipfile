@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aasm = "==0.1.1"
+aasm = "==0.1.3"
 uvicorn = {extras = ["standard"], version = "*"}
 fastapi = "*"
 orjson = "*"
+pydantic-settings = "*"
 
 [dev-packages]
 black = "*"
