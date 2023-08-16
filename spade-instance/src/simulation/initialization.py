@@ -7,8 +7,10 @@ from typing import TYPE_CHECKING
 
 from spade.behaviour import FSMBehaviour
 
+
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Dict, List
+    from code_generation import Module
 
     from aioxmpp.structs import JID
     from spade.agent import Agent
@@ -25,6 +27,11 @@ def setup_agent(agent: Agent) -> List[Behaviour]:
     behaviours = copy.copy(agent.behaviours)
 
     logger.debug(f"Agent {agent.jid} behaviours: {behaviours}")
+
+    # for module in modules:
+    #     for imp in module.imports:
+    #         exec(imp)
+    #     exec(f"{module.name} = module.import_code()", globals(), locals()) 
 
     for behaviour in agent.behaviours:  # pragma: no cover
         if not behaviour.is_running:

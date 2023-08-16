@@ -55,7 +55,7 @@ async def run_simulation(
     modules = parse_module_code(module_code_lines)
 
     logger.info("Generating agents...")
-    agents = generate_agents(agent_code_lines, modules, agent_data, agent_updates)
+    agents = generate_agents(agent_code_lines, agent_data, modules, agent_updates)
 
     logger.info("Running setup...")
     agent_behaviours = setup_agents(agents)

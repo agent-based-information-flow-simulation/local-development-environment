@@ -61,8 +61,8 @@ def parse_module_code(module_code_lines: List[str]) -> List[Module]:
 
 def generate_agents(
     agent_code_lines: List[str],
-    modules: List[Module],
     agent_data: List[Dict[str, Any]],
+    modules: List[Module],
     agent_updates: AioQueue,
 ) -> List[Agent]:
     agent_logger = logging.getLogger("agent")
@@ -74,8 +74,7 @@ def generate_agents(
     for module in modules:
         for imp in module.imports:
             exec(imp)
-        # I do not exactly know why this works with proper scoping, so don't change it
-        exec(f"{module.name} = module.import_code()", globals(), locals()) 
+        exec(f"global {module.name}\n{module.name} = module.import_code()", globals(), locals()) 
 
     exec("\n".join(code_without_imports))
 
