@@ -29,8 +29,6 @@ class GraphCreatorService(BaseService):
             raise GraphNotGeneratedException()
         if seed == -1:
             seed = random.randint(0, 100000)
-        if sim_id == "":
-            sim_id = str(uuid.uuid4())
         return algorithm(self.fake_domain, sim_id, seed)
 
     def _remove_imports(self, graph_code_lines: List[str]) -> List[str]:

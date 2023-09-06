@@ -62,7 +62,7 @@ async def create_simulation(
 
     try:
         agent_data = graph_creator_service.run_generated_algorithm(
-            translated_code.graph_code_lines
+            translated_code.graph_code_lines, simulation_data.simulation_id, simulation_data.simulation_seed
         )
     except GraphNotGeneratedException as e:
         raise HTTPException(500, str(e))

@@ -9,6 +9,8 @@ from pydantic import BaseModel
 class CreateSimulation(BaseModel):
     aasm_code_lines: List[str]
     module_code_lines: List[List[str]]
+    simulation_id: str
+    simulation_seed: int
 
     class Config:
         json_loads = orjson.loads
